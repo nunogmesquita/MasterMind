@@ -11,61 +11,68 @@ public class Game {
 
     private ServerSocket serverSocket;
     private ExecutorService service;
-    private final List<ClientConnectionHandler> clients;
+    private final List<ClientConnectionHandler> playersList;
+    private BufferedWriter outputName;
 
 
     public Game() {
-        clients = new CopyOnWriteArrayList<>();
+        playersList = new CopyOnWriteArrayList<>();
     }
 
     public void start(int port) throws IOException {
         serverSocket = new ServerSocket(port);
         service = Executors.newFixedThreadPool(2);
-        int numberOfConnections = 0;
         System.out.printf(Messages.SERVER_STARTED, port);
 
         while (true) {
-            acceptConnection(numberOfConnections);
-            ++numberOfConnections;
+            acceptConnection();
+
+
         }
     }
 
-    public void acceptConnection(int numberOfConnections) throws IOException {
+    public void acceptConnection() throws IOException {
         Socket clientSocket = serverSocket.accept();
+        outputName = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
+        outputName.write("Please insert your name!");
+        outputName.newLine();
+        outputName.flush();
+//        Scanner scannerIn = new Scanner(clientSocket.getInputStream());
+        BufferedReader inputName = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+        String username = inputName.readLine();
         ClientConnectionHandler clientConnectionHandler =
-                new ClientConnectionHandler(clientSocket,
-                        Messages.DEFAULT_NAME + numberOfConnections);
+                new ClientConnectionHandler(clientSocket,username);
+
         service.submit(clientConnectionHandler);
     }
 
     private void addClient(ClientConnectionHandler clientConnectionHandler) {
-
-        clients.add(clientConnectionHandler);
+        playersList.add(clientConnectionHandler);
         clientConnectionHandler.send(Messages.WELCOME.formatted(clientConnectionHandler.getName()));
-        clientConnectionHandler.send(Messages.COMMANDS_LIST);
-        broadcast(clientConnectionHandler.getName(), Messages.CLIENT_ENTERED_CHAT);
+//        clientConnectionHandler.send(Messages.COMMANDS_LIST);
+//        broadcast(clientConnectionHandler.getName(), Messages.CLIENT_ENTERED_CHAT);   este broadcast vai imprimir as regras do jogo que vao estar presentes no gamerules.txt
     }
 
     public void broadcast(String name, String message) {
-        clients.stream()
+        playersList.stream()
                 .filter(handler -> !handler.getName().equals(name))
                 .forEach(handler -> handler.send(name + ": " + message));
     }
 
 
-    public String listClients() {
-        StringBuffer buffer = new StringBuffer();
-        clients.forEach(client -> buffer.append(client.getName()).append("\n"));
-        return buffer.toString();
-    }
+//    public String listClients() {
+//        StringBuffer buffer = new StringBuffer();
+//        clients.forEach(client -> buffer.append(client.getName()).append("\n"));
+//        return buffer.toString();
+//    }
 
     public void removeClient(ClientConnectionHandler clientConnectionHandler) {
-        clients.remove(clientConnectionHandler);
+        playersList.remove(clientConnectionHandler);
 
     }
 
     public Optional<ClientConnectionHandler> getClientByName(String name) {
-        return clients.stream()
+        return playersList.stream()
                 .filter(clientConnectionHandler -> clientConnectionHandler.getName().equalsIgnoreCase(name))
                 .findFirst();
     }
