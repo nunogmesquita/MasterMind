@@ -17,13 +17,18 @@ public class Game {
     private ServerSocket serverSocket;
     private ExecutorService service;
     int numOfPlayers;
-    private BufferedWriter outputName;
-    private final List<ClientConnectionHandler> playersList;
+    private final List<PlayerConnectionHandler> playersList;
     List<Integer> secretCode;
     boolean win = false;
+    private final HashMap<String, Socket> userSocketMap;
+    private final HashMap<PlayerConnectionHandler, ArrayList<String>> userBoardMap;
+    List<String> turnResult;
+
 
     public Game(int numOfPlayers) {
         playersList = new CopyOnWriteArrayList<>();
+        userSocketMap = new HashMap<>();
+        userBoardMap = new HashMap<>();
         this.numOfPlayers = numOfPlayers;
     }
 
@@ -38,10 +43,10 @@ public class Game {
     }
 
     public void acceptConnection() throws IOException {
-        Socket clientSocket = serverSocket.accept();
-        ClientConnectionHandler clientConnectionHandler =
-                new ClientConnectionHandler(clientSocket);
-        service.submit(clientConnectionHandler);
+        Socket playerSocket = serverSocket.accept();
+        PlayerConnectionHandler playerConnectionHandler =
+                new PlayerConnectionHandler(playerSocket);
+        service.submit(playerConnectionHandler);
     }
 
 
@@ -51,8 +56,36 @@ public class Game {
                 .forEach(handler -> handler.send(name + ": " + message));
     }
 
-    public void removeClient(ClientConnectionHandler clientConnectionHandler) {
-        playersList.remove(clientConnectionHandler);
+    public void removePlayer(PlayerConnectionHandler playerConnectionHandler) {
+        playersList.remove(playerConnectionHandler);
+    }
+
+    public void broadcastBoard(PlayerConnectionHandler playerConnectionHandler) {
+        updateBoard(playerConnectionHandler);
+        ArrayList<String> boardToSend = null;
+        for (PlayerConnectionHandler newPlayer : userBoardMap.keySet()) {
+            if (newPlayer.getName().equals(playerConnectionHandler.getName())) {
+                boardToSend = userBoardMap.get(playerConnectionHandler.getName());
+            }
+        }
+        if (boardToSend != null) {
+            for (int i = 0; i < boardToSend.size(); i++) {
+                playerConnectionHandler.send(boardToSend.get(i));
+            }
+        }
+    }
+
+    public void updateBoard(PlayerConnectionHandler player) {
+        String newTry = (" _______________________ \n" + "|  " + player.playerGuess.get(0) + "  |  " + player.playerGuess.get(0) + "  |  " + player.playerGuess.get(0) + "  |  " + player.playerGuess.get(0) + "  |  " + " [==] "
+                + turnResult.get(0) + turnResult.get(1) + turnResult.get(2) + turnResult.get(3) + "\n_______________________    ____");
+        ArrayList<String> boardNewCopy;
+        for (PlayerConnectionHandler playerConnectionHandler : userBoardMap.keySet()) {
+            if (player.getName().equals(playerConnectionHandler.getName())) {
+                boardNewCopy = userBoardMap.get(playerConnectionHandler.getName());
+                boardNewCopy.add(newTry);
+                userBoardMap.put(playerConnectionHandler, boardNewCopy);
+            }
+        }
     }
 
     private void generateCode() {
@@ -64,24 +97,22 @@ public class Game {
         }
     }
 
-    private List<String> compareCodes(List<Integer> playerGuess, List<Integer> secretCode) {
-        List<String> result = new ArrayList<>();
+    private void compareCodes(List<Integer> playerGuess, List<Integer> secretCode) {
+        turnResult = new ArrayList<>();
         for (int i = 0; i < playerGuess.size(); i++) {
             if (playerGuess.get(i).equals(secretCode.get(i))) {
-                result.add("+");
+                turnResult.add("+");
                 playerGuess.remove(i);
                 secretCode.remove(i);
             }
         }
         for (int i = 0; i < playerGuess.size(); i++) {
             if (secretCode.contains(playerGuess.get(i))) {
-                result.add("-");
+                turnResult.add("-");
                 playerGuess.remove(i);
                 secretCode.remove(i);
             }
         }
-
-        return result;
     }
 
     private void checkWinner(List<Integer> playerGuess) {
@@ -90,47 +121,47 @@ public class Game {
         }
     }
 
-    public class ClientConnectionHandler implements Runnable {
+    public class PlayerConnectionHandler implements Runnable {
 
         private String name;
-        private final Socket clientSocket;
+        private final Socket playerSocket;
         private final BufferedWriter out;
         private String message;
         List<Integer> playerGuess;
 
-        public ClientConnectionHandler(Socket clientSocket) throws IOException {
-            this.clientSocket = clientSocket;
-            this.out = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
+        public PlayerConnectionHandler(Socket playerSocket) throws IOException {
+            this.playerSocket = playerSocket;
+            this.out = new BufferedWriter(new OutputStreamWriter(playerSocket.getOutputStream()));
         }
 
         @Override
         public void run() {
             try {
-                addClient(this);
+                addPlayer(this);
                 send(Messages.INSERT_TRY);
                 generateCode();
                 while (!win) {
                     System.out.println(secretCode);
                     communicate();
                     checkWinner(playerGuess);
-                    send(compareCodes(playerGuess, secretCode).toString());
+                    compareCodes(playerGuess, secretCode);
+                    send(turnResult.toString());
+                    broadcastBoard(this);
                 }
-                removeClient(this);
+                removePlayer(this);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
 
-        private void addClient(ClientConnectionHandler clientConnectionHandler) throws IOException {
-            playersList.add(clientConnectionHandler);
-            outputName = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
-            outputName.write("Please insert your username!");
-            outputName.newLine();
-            outputName.flush();
-            BufferedReader inputName = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+        private void addPlayer(PlayerConnectionHandler playerConnectionHandler) throws IOException {
+            playersList.add(playerConnectionHandler);
+            userSocketMap.put(playerConnectionHandler.getName(), this.playerSocket);
+            send("Please insert your username!");
+            BufferedReader inputName = new BufferedReader(new InputStreamReader(playerSocket.getInputStream()));
             this.name = inputName.readLine();
-            clientConnectionHandler.send(Messages.WELCOME.formatted(clientConnectionHandler.getName()));
-            clientConnectionHandler.send(readInstruction());
+            playerConnectionHandler.send(Messages.WELCOME.formatted(playerConnectionHandler.getName()));
+            playerConnectionHandler.send(readInstruction());
         }
 
         private String readInstruction() {
@@ -153,7 +184,7 @@ public class Game {
 
         private void communicate() throws IOException {
             try {
-                Scanner in = new Scanner(clientSocket.getInputStream());
+                Scanner in = new Scanner(playerSocket.getInputStream());
                 message = in.nextLine();
                 if (isCommand(message)) {
                     dealWithCommand(message);
@@ -161,7 +192,7 @@ public class Game {
                 validatePlay();
                 playerGuess();
             } catch (IOException e) {
-                System.err.println(Messages.CLIENT_ERROR + e.getMessage());
+                System.err.println(Messages.PLAYER_ERROR + e.getMessage());
             }
         }
 
@@ -204,14 +235,14 @@ public class Game {
                 out.newLine();
                 out.flush();
             } catch (IOException e) {
-                removeClient(this);
+                removePlayer(this);
                 e.printStackTrace();
             }
         }
 
         public void close() {
             try {
-                clientSocket.close();
+                playerSocket.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }

@@ -11,7 +11,7 @@ public abstract class Messages {
             /whisper <username> <message> -> lets you whisper a message to a single connected player
             /name <new name> -> lets you change your name
             /quit -> exits the game""";
-    public static final String CLIENT_ERROR = "Something went wrong with this player's connection. Error: ";
+    public static final String PLAYER_ERROR = "Something went wrong with this player's connection. Error: ";
 
     public static final String INVALID_TRY = "Please insert a valid 4 digits number.";
     public static final String INSERT_TRY = "Please insert a 4 digit code.";

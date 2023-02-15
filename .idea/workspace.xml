@@ -4,23 +4,20 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b10b70de-bad9-4c01-a475-4a6e6a65c94a" name="Changes" comment="First Mastermind Framework Commit">
+    <list default="true" id="b10b70de-bad9-4c01-a475-4a6e6a65c94a" name="Changes" comment="Working game!&#10;Needs to improve comparing algorithm...">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/Game$ClientConnectionHandler.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/Game$ClientConnectionHandler.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/Game$ClientConnectionHandler.class" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/Game.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/Game.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/commands/Command.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/commands/Command.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/commands/CommandHandler.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/commands/CommandHandler.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/commands/HelpHandler.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/commands/HelpHandler.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/player/Player$KeyboardHandler.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/player/Player$KeyboardHandler.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/player/Player.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/player/Player.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/academy/mindswap/game/Game.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/GameLauncher.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/academy/mindswap/game/GameLauncher.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/commands/Command.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/academy/mindswap/game/commands/Command.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/commands/GameRules.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/academy/mindswap/game/commands/GameRules.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/commands/CommandHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/academy/mindswap/game/commands/CommandHandler.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/commands/HelpHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/academy/mindswap/game/commands/HelpHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/commands/ListHandler.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/commands/NameHandler.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/commands/QuitHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/academy/mindswap/game/commands/QuitHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/commands/ShoutHandler.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/commands/WhisperHandler.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/messages/Messages.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/academy/mindswap/game/messages/Messages.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/academy/mindswap/player/Player.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/academy/mindswap/player/Player.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -108,7 +105,14 @@
       <option name="project" value="LOCAL" />
       <updated>1676464216642</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Working game!&#10;Needs to improve comparing algorithm...">
+      <created>1676475046114</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1676475046114</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -136,6 +140,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Compare List ready" />
-    <option name="LAST_COMMIT_MESSAGE" value="Compare List ready" />
+    <MESSAGE value="Working game!&#10;Needs to improve comparing algorithm..." />
+    <option name="LAST_COMMIT_MESSAGE" value="Working game!&#10;Needs to improve comparing algorithm..." />
   </component>
 </project>

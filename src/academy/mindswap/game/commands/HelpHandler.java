@@ -6,7 +6,7 @@ import academy.mindswap.game.messages.Messages;
 public class HelpHandler implements CommandHandler {
 
     @Override
-    public void execute(Game game, Game.ClientConnectionHandler clientConnectionHandler) {
-        clientConnectionHandler.send(Messages.COMMANDS_LIST);
+    public void execute(Game game, Game.PlayerConnectionHandler playerConnectionHandler) {
+        playerConnectionHandler.send(Messages.COMMANDS_LIST);
     }
 }
