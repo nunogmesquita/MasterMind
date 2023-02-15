@@ -10,51 +10,40 @@ import java.util.concurrent.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Game {
+import static java.lang.Integer.parseInt;
 
+public class Game {
 
     private ServerSocket serverSocket;
     private ExecutorService service;
-    private final List<ClientConnectionHandler> playersList;
+    int numOfPlayers;
     private BufferedWriter outputName;
+    private final List<ClientConnectionHandler> playersList;
+    List<Integer> secretCode;
+    boolean win = false;
 
-
-    public Game() {
+    public Game(int numOfPlayers) {
         playersList = new CopyOnWriteArrayList<>();
+        this.numOfPlayers = numOfPlayers;
     }
 
     public void start(int port) throws IOException {
         serverSocket = new ServerSocket(port);
-        service = Executors.newFixedThreadPool(2);
-        System.out.printf(Messages.SERVER_STARTED, port);
+        service = Executors.newFixedThreadPool(numOfPlayers);
+        System.out.printf(Messages.GAME_STARTED);
 
         while (true) {
             acceptConnection();
-
         }
     }
 
     public void acceptConnection() throws IOException {
         Socket clientSocket = serverSocket.accept();
-        outputName = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
-        outputName.write("Please insert your name!");
-        outputName.newLine();
-        outputName.flush();
-//        Scanner scannerIn = new Scanner(clientSocket.getInputStream());
-        BufferedReader inputName = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-        String username = inputName.readLine();
         ClientConnectionHandler clientConnectionHandler =
-                new ClientConnectionHandler(clientSocket, username);
-
+                new ClientConnectionHandler(clientSocket);
         service.submit(clientConnectionHandler);
     }
 
-    private void addClient(ClientConnectionHandler clientConnectionHandler) {
-        playersList.add(clientConnectionHandler);
-        clientConnectionHandler.send(Messages.WELCOME.formatted(clientConnectionHandler.getName()));
-//        clientConnectionHandler.send(Messages.COMMANDS_LIST);
-//        broadcast(clientConnectionHandler.getName(), Messages.CLIENT_ENTERED_CHAT);   este broadcast vai imprimir as regras do jogo que vao estar presentes no gamerules.txt
-    }
 
     public void broadcast(String name, String message) {
         playersList.stream()
@@ -62,48 +51,17 @@ public class Game {
                 .forEach(handler -> handler.send(name + ": " + message));
     }
 
-
-//    public String listClients() {
-//        StringBuffer buffer = new StringBuffer();
-//        clients.forEach(client -> buffer.append(client.getName()).append("\n"));
-//        return buffer.toString();
-//    }
-
     public void removeClient(ClientConnectionHandler clientConnectionHandler) {
         playersList.remove(clientConnectionHandler);
-
     }
 
-    public Optional<ClientConnectionHandler> getClientByName(String name) {
-        return playersList.stream()
-                .filter(clientConnectionHandler -> clientConnectionHandler.getName().equalsIgnoreCase(name))
-                .findFirst();
-    }
-
-    private List<Integer> generateCode() {
+    private void generateCode() {
         Random random = new Random();
-        List<Integer> secretCode = new ArrayList<>();
-
+        secretCode = new ArrayList<>();
         for (int i = 0; i < 4; i++) {
             int digit = random.nextInt(5);
             secretCode.add(digit);
         }
-        return secretCode;
-    }
-
-    private boolean compareLists(List<Integer> list1, List<Integer> list2) {
-        if (list1.size() != list2.size()) {
-            System.out.println("We are playing with a four digit code");
-            return false;// trocar para validação de tudo
-        }
-
-        for (int i = 0; i < list1.size(); i++) {
-            if (!list1.get(i).equals(list2.get(i))) {
-                return false;
-            }
-        }
-
-        return true;
     }
 
     private List<String> compareCodes(List<Integer> playerGuess, List<Integer> secretCode) {
@@ -122,11 +80,14 @@ public class Game {
                 secretCode.remove(i);
             }
         }
+
         return result;
     }
 
-    public String listClients() {
-        return "zé";
+    private void checkWinner(List<Integer> playerGuess) {
+        if (secretCode.equals(playerGuess)) {
+            win = true;
+        }
     }
 
     public class ClientConnectionHandler implements Runnable {
@@ -135,52 +96,88 @@ public class Game {
         private final Socket clientSocket;
         private final BufferedWriter out;
         private String message;
+        List<Integer> playerGuess;
 
-        public ClientConnectionHandler(Socket clientSocket, String name) throws IOException {
+        public ClientConnectionHandler(Socket clientSocket) throws IOException {
             this.clientSocket = clientSocket;
-            this.name = name;
             this.out = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
         }
 
         @Override
         public void run() {
-            addClient(this);
-            communicate();
-            removeClient(this);
+            try {
+                addClient(this);
+                send(Messages.INSERT_TRY);
+                generateCode();
+                while (!win) {
+                    System.out.println(secretCode);
+                    communicate();
+                    checkWinner(playerGuess);
+                    send(compareCodes(playerGuess, secretCode).toString());
+                }
+                removeClient(this);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
 
-        private void communicate() {
+        private void addClient(ClientConnectionHandler clientConnectionHandler) throws IOException {
+            playersList.add(clientConnectionHandler);
+            outputName = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
+            outputName.write("Please insert your username!");
+            outputName.newLine();
+            outputName.flush();
+            BufferedReader inputName = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            this.name = inputName.readLine();
+            clientConnectionHandler.send(Messages.WELCOME.formatted(clientConnectionHandler.getName()));
+            clientConnectionHandler.send(readInstruction());
+        }
+
+        private String readInstruction() {
+            try {
+                File file = new File("/Users/nunogilmesquita/Documents/mindswap_2023/MasterMind/src/academy/mindswap/game/commands/GameRules.txt");
+                Scanner scanner = new Scanner(file);
+
+                StringBuilder stringBuilder = new StringBuilder();
+                while (scanner.hasNextLine()) {
+                    stringBuilder.append(scanner.nextLine());
+                    stringBuilder.append("\n");
+                }
+                scanner.close();
+                return stringBuilder.toString();
+            } catch (FileNotFoundException e) {
+                System.out.println("File not found " + e.getMessage());
+            }
+            return null;
+        }
+
+        private void communicate() throws IOException {
             try {
                 Scanner in = new Scanner(clientSocket.getInputStream());
-                while (in.hasNext()) {
-                    message = in.nextLine();
-                    if (isCommand(message)) {
-                        dealWithCommand(message);
-                        continue;
-                    }
-                    validatePlay();
-                    playerGuess();
-                    broadcast(name, message);
+                message = in.nextLine();
+                if (isCommand(message)) {
+                    dealWithCommand(message);
                 }
+                validatePlay();
+                playerGuess();
             } catch (IOException e) {
                 System.err.println(Messages.CLIENT_ERROR + e.getMessage());
             }
         }
 
-        private List<Integer> playerGuess() {
-            List<Integer> playerGuess = new ArrayList<>(message.length());
+        private void playerGuess() {
+            playerGuess = new ArrayList<>(message.length());
             for (int i = 0; i < message.length(); i++) {
-                playerGuess.add((int) message.charAt(i));
+                playerGuess.add(parseInt(String.valueOf(message.charAt(i))));
             }
-            return playerGuess;
         }
 
-        private void validatePlay() {
-            String regex = "[0-9]{4}";
+        private void validatePlay() throws IOException {
+            String regex = "^\\d{4}$";
             final Pattern pattern = Pattern.compile(regex);
             final Matcher matcher = pattern.matcher(message);
             if (!matcher.find()) {
-                broadcast(name, "Please insert a valid input.");
+                send(Messages.INVALID_TRY);
                 communicate();
             }
         }
@@ -192,14 +189,12 @@ public class Game {
         private void dealWithCommand(String message) throws IOException {
             String description = message.split(" ")[0];
             Command command = Command.getCommandFromDescription(description);
-
             if (command == null) {
                 out.write(Messages.NO_SUCH_COMMAND);
                 out.newLine();
                 out.flush();
                 return;
             }
-
             command.getHandler().execute(Game.this, this);
         }
 
@@ -226,12 +221,5 @@ public class Game {
             return name;
         }
 
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public String getMessage() {
-            return message;
-        }
     }
 }

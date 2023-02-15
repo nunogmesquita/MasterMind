@@ -2,13 +2,8 @@ package academy.mindswap.game.commands;
 
 
 public enum Command {
-    LIST("/list", new ListHandler()),
     HELP("/help", new HelpHandler()),
-    WHISPER("/whisper", new WhisperHandler()),
-    QUIT("/quit", new QuitHandler()),
-    SHOUT("/shout", new ShoutHandler()),
-
-    NAME("/name", new NameHandler());
+    QUIT("/quit", new QuitHandler());
 
     private final String description;
     private final CommandHandler handler;

@@ -5,7 +5,7 @@ import java.io.IOException;
 public class GameLauncher {
 
     public static void main(String[] args) {
-        Game game = new Game();
+        Game game = new Game(2);
 
         try {
             game.start(8082);
@@ -13,6 +13,4 @@ public class GameLauncher {
             e.printStackTrace();
         }
     }
-
-
 }

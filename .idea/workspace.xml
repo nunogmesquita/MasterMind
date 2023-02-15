@@ -8,8 +8,19 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/Game$ClientConnectionHandler.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/Game$ClientConnectionHandler.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/Game.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/Game.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/commands/Command.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/commands/Command.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/academy/mindswap/game/Game.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/GameLauncher.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/academy/mindswap/game/GameLauncher.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/commands/Command.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/academy/mindswap/game/commands/Command.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/commands/GameRules.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/academy/mindswap/game/commands/GameRules.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/commands/HelpHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/academy/mindswap/game/commands/HelpHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/commands/ListHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/commands/NameHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/commands/QuitHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/academy/mindswap/game/commands/QuitHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/commands/ShoutHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/commands/WhisperHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/messages/Messages.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/academy/mindswap/game/messages/Messages.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/academy/mindswap/player/Player.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/academy/mindswap/player/Player.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -19,7 +30,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="main" />
+        <entry key="$PROJECT_DIR$" value="validate_player_input" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -90,6 +101,14 @@
       <option name="presentableId" value="Default" />
       <updated>1676394744034</updated>
     </task>
+    <task id="LOCAL-00001" summary="Compare List ready">
+      <created>1676464216642</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1676464216642</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -114,5 +133,9 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Compare List ready" />
+    <option name="LAST_COMMIT_MESSAGE" value="Compare List ready" />
   </component>
 </project>

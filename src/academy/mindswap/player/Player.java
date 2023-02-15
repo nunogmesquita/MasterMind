@@ -12,7 +12,6 @@ public class Player {
         } catch (IOException e) {
             System.out.println("Connection closed...");
         }
-
     }
 
     private void start(String host, int port) throws IOException {
