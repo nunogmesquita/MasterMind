@@ -8,9 +8,11 @@ public class GameLauncher {
         Game game = new Game();
 
         try {
-           game.start(8082);
+            game.start(8082);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
+
 }
