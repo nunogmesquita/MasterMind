@@ -76,6 +76,45 @@ public class Game {
                 .filter(clientConnectionHandler -> clientConnectionHandler.getName().equalsIgnoreCase(name))
                 .findFirst();
     }
+    private List<Integer> generateCode() {
+        Random random = new Random();
+        List<Integer> secretCode = new ArrayList<>();
+
+        for (int i = 0; i < 4; i++) {
+            int digit = random.nextInt(5);
+            secretCode.add(digit);
+        }
+        return secretCode;
+    }
+
+    private boolean compareLists(List<Integer> list1, List<Integer> list2) {
+        if (list1.size() != list2.size()) {
+            System.out.println("We are playing with a four digit code");
+            return false;// trocar para validação de tudo
+        }
+
+        for (int i = 0; i < list1.size(); i++) {
+            if (!list1.get(i).equals(list2.get(i))) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private int [] compareCodes (List<Integer> code1,List<Integer>code2){
+        int numCorrectDigits = 0;
+        int numCorrectPositions; //equals com streams e fazer primeiro
+
+        for (int i = 0; i < code1.size(); i++) {
+            int digit = code1.get(i);
+            if(code2.contains(digit)){
+                numCorrectDigits ++;
+            }
+
+        }int [] result ={numCorrectDigits,numCorrectPositions};
+        return result;
+    }
 
     public class ClientConnectionHandler implements Runnable {
 
