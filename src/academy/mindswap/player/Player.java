@@ -44,13 +44,13 @@ public class Player {
 
             while (!socket.isClosed()) {
                 try {
-                    int line = Integer.parseInt(in.readLine());
+                    String line = in.readLine();
 
                     out.write(line);
                     out.newLine();
                     out.flush();
 
-                    if (in.readLine().equals("/quit")) {
+                    if (line.equals("/quit")) {
                         socket.close();
                         System.exit(0);
                     }

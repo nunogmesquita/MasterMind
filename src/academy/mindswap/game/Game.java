@@ -26,6 +26,8 @@ public class Game {
 
         while (true) {
             acceptConnection();
+
+
         }
     }
 
@@ -35,19 +37,20 @@ public class Game {
         outputName.write("Please insert your name!");
         outputName.newLine();
         outputName.flush();
+//        Scanner scannerIn = new Scanner(clientSocket.getInputStream());
         BufferedReader inputName = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         String username = inputName.readLine();
         ClientConnectionHandler clientConnectionHandler =
                 new ClientConnectionHandler(clientSocket,username);
+
         service.submit(clientConnectionHandler);
     }
 
     private void addClient(ClientConnectionHandler clientConnectionHandler) {
-
         playersList.add(clientConnectionHandler);
         clientConnectionHandler.send(Messages.WELCOME.formatted(clientConnectionHandler.getName()));
-       // clientConnectionHandler.send(Messages.COMMANDS_LIST);
-       // broadcast(clientConnectionHandler.getName(), Messages.CLIENT_ENTERED_CHAT);
+//        clientConnectionHandler.send(Messages.COMMANDS_LIST);
+//        broadcast(clientConnectionHandler.getName(), Messages.CLIENT_ENTERED_CHAT);   este broadcast vai imprimir as regras do jogo que vao estar presentes no gamerules.txt
     }
 
     public void broadcast(String name, String message) {
@@ -57,11 +60,11 @@ public class Game {
     }
 
 
-  //  public String listClients() {
-  //      StringBuffer buffer = new StringBuffer();
-  //      playersList.forEach(client -> buffer.append(client.getName()).append("\n"));
-  //      return buffer.toString();
-  //  }
+//    public String listClients() {
+//        StringBuffer buffer = new StringBuffer();
+//        clients.forEach(client -> buffer.append(client.getName()).append("\n"));
+//        return buffer.toString();
+//    }
 
     public void removeClient(ClientConnectionHandler clientConnectionHandler) {
         playersList.remove(clientConnectionHandler);
@@ -73,7 +76,6 @@ public class Game {
                 .filter(clientConnectionHandler -> clientConnectionHandler.getName().equalsIgnoreCase(name))
                 .findFirst();
     }
-
     private List<Integer> generateCode() {
         Random random = new Random();
         List<Integer> secretCode = new ArrayList<>();
@@ -113,7 +115,6 @@ public class Game {
         }int [] result ={numCorrectDigits,numCorrectPositions};
         return result;
     }
-
 
     public class ClientConnectionHandler implements Runnable {
 
