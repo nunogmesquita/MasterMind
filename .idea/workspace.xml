@@ -4,16 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b10b70de-bad9-4c01-a475-4a6e6a65c94a" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/academy/mindswap/game/commands/GameRules.txt" afterDir="false" />
+    <list default="true" id="b10b70de-bad9-4c01-a475-4a6e6a65c94a" name="Changes" comment="First Mastermind Framework Commit">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/Game$ClientConnectionHandler.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/Game$ClientConnectionHandler.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/Game.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/Game.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/commands/Command.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/commands/Command.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/player/Player$KeyboardHandler.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/player/Player$KeyboardHandler.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/player/Player.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/player/Player.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/academy/mindswap/game/Game.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/academy/mindswap/player/Player.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/academy/mindswap/player/Player.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/GameLauncher.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/academy/mindswap/game/GameLauncher.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -32,6 +28,7 @@
     <option name="stateVersion" value="1" />
   </component>
   <component name="ProjectId" id="2LjqGL2HZyfupAbklzWsPOHvqee" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -47,7 +44,7 @@
       <recent name="$PROJECT_DIR$/src/academy/mindswap/game/commands" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.Player">
+  <component name="RunManager" selected="Application.GameLauncher">
     <configuration name="GameLauncher" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="academy.mindswap.game.GameLauncher" />
       <module name="MasterMind" />
@@ -76,8 +73,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.Player" />
         <item itemvalue="Application.GameLauncher" />
+        <item itemvalue="Application.Player" />
         <item itemvalue="Application.Player" />
         <item itemvalue="Application.GameLauncher" />
         <item itemvalue="Application.Player" />
@@ -106,7 +103,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="ReinaldoDraft" />
+                        <option value="validate_player_input" />
                       </list>
                     </value>
                   </entry>

@@ -1,10 +1,14 @@
 package academy.mindswap.game;
+
 import academy.mindswap.game.commands.Command;
 import academy.mindswap.game.messages.Messages;
+
 import java.io.*;
 import java.net.*;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Game {
 
@@ -27,7 +31,6 @@ public class Game {
         while (true) {
             acceptConnection();
 
-
         }
     }
 
@@ -41,7 +44,7 @@ public class Game {
         BufferedReader inputName = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         String username = inputName.readLine();
         ClientConnectionHandler clientConnectionHandler =
-                new ClientConnectionHandler(clientSocket,username);
+                new ClientConnectionHandler(clientSocket, username);
 
         service.submit(clientConnectionHandler);
     }
@@ -76,6 +79,7 @@ public class Game {
                 .filter(clientConnectionHandler -> clientConnectionHandler.getName().equalsIgnoreCase(name))
                 .findFirst();
     }
+
     private List<Integer> generateCode() {
         Random random = new Random();
         List<Integer> secretCode = new ArrayList<>();
@@ -102,18 +106,27 @@ public class Game {
         return true;
     }
 
-    private int [] compareCodes (List<Integer> code1,List<Integer>code2){
-        int numCorrectDigits = 0;
-        int numCorrectPositions; //equals com streams e fazer primeiro
-
-        for (int i = 0; i < code1.size(); i++) {
-            int digit = code1.get(i);
-            if(code2.contains(digit)){
-                numCorrectDigits ++;
+    private List<String> compareCodes(List<Integer> playerGuess, List<Integer> secretCode) {
+        List<String> result = new ArrayList<>();
+        for (int i = 0; i < playerGuess.size(); i++) {
+            if (playerGuess.get(i).equals(secretCode.get(i))) {
+                result.add("+");
+                playerGuess.remove(i);
+                secretCode.remove(i);
             }
-
-        }int [] result ={numCorrectDigits,numCorrectPositions};
+        }
+        for (int i = 0; i < playerGuess.size(); i++) {
+            if (secretCode.contains(playerGuess.get(i))) {
+                result.add("-");
+                playerGuess.remove(i);
+                secretCode.remove(i);
+            }
+        }
         return result;
+    }
+
+    public String listClients() {
+        return "zé";
     }
 
     public class ClientConnectionHandler implements Runnable {
@@ -132,6 +145,11 @@ public class Game {
         @Override
         public void run() {
             addClient(this);
+            communicate();
+            removeClient(this);
+        }
+
+        private void communicate() {
             try {
                 Scanner in = new Scanner(clientSocket.getInputStream());
                 while (in.hasNext()) {
@@ -140,16 +158,30 @@ public class Game {
                         dealWithCommand(message);
                         continue;
                     }
-                    if (message.equals("")) {
-                        continue;
-                    }
-
+                    validatePlay();
+                    playerGuess();
                     broadcast(name, message);
                 }
             } catch (IOException e) {
                 System.err.println(Messages.CLIENT_ERROR + e.getMessage());
-            } finally {
-                removeClient(this);
+            }
+        }
+
+        private List<Integer> playerGuess() {
+            List<Integer> playerGuess = new ArrayList<>(message.length());
+            for (int i = 0; i < message.length(); i++) {
+                playerGuess.add((int) message.charAt(i));
+            }
+            return playerGuess;
+        }
+
+        private void validatePlay() {
+            String regex = "[0-9]{4}";
+            final Pattern pattern = Pattern.compile(regex);
+            final Matcher matcher = pattern.matcher(message);
+            if (!matcher.find()) {
+                broadcast(name, "Please insert a valid input.");
+                communicate();
             }
         }
 
