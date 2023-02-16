@@ -13,7 +13,6 @@ import java.util.regex.Pattern;
 import static java.lang.Integer.parseInt;
 
 public class Game {
-
     private ServerSocket serverSocket;
     private ExecutorService service;
     int numOfPlayers;
@@ -21,14 +20,13 @@ public class Game {
     List<Integer> secretCode;
     boolean win = false;
     private final HashMap<String, Socket> userSocketMap;
-    private final HashMap<PlayerConnectionHandler, ArrayList<String>> userBoardMap;
     List<String> turnResult;
 
 
     public Game(int numOfPlayers) {
         playersList = new CopyOnWriteArrayList<>();
         userSocketMap = new HashMap<>();
-        userBoardMap = new HashMap<>();
+//        userBoardMap = new HashMap<>();
         this.numOfPlayers = numOfPlayers;
     }
 
@@ -60,32 +58,26 @@ public class Game {
         playersList.remove(playerConnectionHandler);
     }
 
-    public void broadcastBoard(PlayerConnectionHandler playerConnectionHandler) {
-        updateBoard(playerConnectionHandler);
-        ArrayList<String> boardToSend = null;
-        for (PlayerConnectionHandler newPlayer : userBoardMap.keySet()) {
-            if (newPlayer.getName().equals(playerConnectionHandler.getName())) {
-                boardToSend = userBoardMap.get(playerConnectionHandler.getName());
-            }
-        }
-        if (boardToSend != null) {
-            for (int i = 0; i < boardToSend.size(); i++) {
-                playerConnectionHandler.send(boardToSend.get(i));
-            }
+    public void broadcastBoard(PlayerConnectionHandler player) {
+        updateBoard(player);
+        System.out.println(player.board.size());
+        for (int i = 0; i < player.board.size(); i++) {
+            System.out.println(i);
+            player.send(player.board.get(i));
         }
     }
-
     public void updateBoard(PlayerConnectionHandler player) {
-        String newTry = (" _______________________ \n" + "|  " + player.playerGuess.get(0) + "  |  " + player.playerGuess.get(0) + "  |  " + player.playerGuess.get(0) + "  |  " + player.playerGuess.get(0) + "  |  " + " [==] "
-                + turnResult.get(0) + turnResult.get(1) + turnResult.get(2) + turnResult.get(3) + "\n_______________________    ____");
-        ArrayList<String> boardNewCopy;
-        for (PlayerConnectionHandler playerConnectionHandler : userBoardMap.keySet()) {
-            if (player.getName().equals(playerConnectionHandler.getName())) {
-                boardNewCopy = userBoardMap.get(playerConnectionHandler.getName());
-                boardNewCopy.add(newTry);
-                userBoardMap.put(playerConnectionHandler, boardNewCopy);
-            }
-        }
+        String newTry = "_______________________ \n" +
+                "|  " +  player.playerGuess.get(0).toString() +
+                "  |  " + player.playerGuess.get(1).toString() +
+                "  |  " + player.playerGuess.get(2).toString() +
+                "  |  " + player.playerGuess.get(3).toString() + "  |  " + " [==] "
+                + turnResult.get(0) +
+                turnResult.get(1) + " " +
+                " " + turnResult.get(2) +
+                turnResult.get(3) + "\n_______________________    ____";
+        System.out.println(newTry);
+        player.board.add(newTry);
     }
 
     private void generateCode() {
@@ -99,20 +91,25 @@ public class Game {
 
     private void compareCodes(List<Integer> playerGuess, List<Integer> secretCode) {
         turnResult = new ArrayList<>();
+        List<Integer> playerGuessCopy = new ArrayList<>(playerGuess);
+        List<Integer> secretCodeCopy = new ArrayList<>(secretCode);
         for (int i = 0; i < playerGuess.size(); i++) {
-            if (playerGuess.get(i).equals(secretCode.get(i))) {
+            if (playerGuessCopy.get(i).equals(secretCodeCopy.get(i)) && playerGuessCopy.get(i) != null ) {
                 turnResult.add("+");
-                playerGuess.remove(i);
-                secretCode.remove(i);
+                playerGuessCopy.set(i,null);
+                secretCodeCopy.set(i,null);
             }
         }
+
         for (int i = 0; i < playerGuess.size(); i++) {
-            if (secretCode.contains(playerGuess.get(i))) {
+            if (secretCodeCopy.contains(playerGuessCopy.get(i)) && playerGuessCopy.get(i) != null) {
                 turnResult.add("-");
-                playerGuess.remove(i);
-                secretCode.remove(i);
+                playerGuessCopy.set(i,null);
+                secretCodeCopy.set(i,null);
             }
         }
+        playerGuessCopy.clear();
+        secretCodeCopy.clear();
     }
 
     private void checkWinner(List<Integer> playerGuess) {
@@ -128,26 +125,29 @@ public class Game {
         private final BufferedWriter out;
         private String message;
         List<Integer> playerGuess;
+        private int turns;
+        private ArrayList<String> board;
 
         public PlayerConnectionHandler(Socket playerSocket) throws IOException {
             this.playerSocket = playerSocket;
             this.out = new BufferedWriter(new OutputStreamWriter(playerSocket.getOutputStream()));
+            this.board = new ArrayList<>();
         }
 
         @Override
         public void run() {
             try {
                 addPlayer(this);
-                send(Messages.INSERT_TRY);
                 generateCode();
-                while (!win) {
+                    while (!win) {
+                    send(Messages.INSERT_TRY);
                     System.out.println(secretCode);
                     communicate();
                     checkWinner(playerGuess);
                     compareCodes(playerGuess, secretCode);
                     send(turnResult.toString());
                     broadcastBoard(this);
-                }
+                    }
                 removePlayer(this);
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -156,17 +156,19 @@ public class Game {
 
         private void addPlayer(PlayerConnectionHandler playerConnectionHandler) throws IOException {
             playersList.add(playerConnectionHandler);
-            userSocketMap.put(playerConnectionHandler.getName(), this.playerSocket);
             send("Please insert your username!");
             BufferedReader inputName = new BufferedReader(new InputStreamReader(playerSocket.getInputStream()));
             this.name = inputName.readLine();
             playerConnectionHandler.send(Messages.WELCOME.formatted(playerConnectionHandler.getName()));
             playerConnectionHandler.send(readInstruction());
+            userSocketMap.put(playerConnectionHandler.getName(),playerConnectionHandler.playerSocket);
+
+
         }
 
         private String readInstruction() {
             try {
-                File file = new File("/Users/nunogilmesquita/Documents/mindswap_2023/MasterMind/src/academy/mindswap/game/commands/GameRules.txt");
+                File file = new File("resources/GameRules.txt");
                 Scanner scanner = new Scanner(file);
 
                 StringBuilder stringBuilder = new StringBuilder();
@@ -190,13 +192,13 @@ public class Game {
                     dealWithCommand(message);
                 }
                 validatePlay();
-                playerGuess();
+                checkPlayerGuess();
             } catch (IOException e) {
                 System.err.println(Messages.PLAYER_ERROR + e.getMessage());
             }
         }
 
-        private void playerGuess() {
+        private void checkPlayerGuess() {
             playerGuess = new ArrayList<>(message.length());
             for (int i = 0; i < message.length(); i++) {
                 playerGuess.add(parseInt(String.valueOf(message.charAt(i))));

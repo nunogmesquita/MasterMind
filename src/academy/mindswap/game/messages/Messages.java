@@ -1,7 +1,7 @@
 package academy.mindswap.game.messages;
 
 public abstract class Messages {
-    public static final String GAME_STARTED = "MASTERMIND";
+    public static final String GAME_STARTED = "MASTERMIND\n";
     public static final String WELCOME = "Welcome to Mastermind %s!";
     public static final String NO_SUCH_COMMAND = "⚠️ Invalid command!";
     public static final String COMMANDS_LIST = """
