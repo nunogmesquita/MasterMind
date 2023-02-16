@@ -6,10 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="b10b70de-bad9-4c01-a475-4a6e6a65c94a" name="Changes" comment="Working game!&#10;Needs to improve comparing algorithm...">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MasterMind.iml" beforeDir="false" afterPath="$PROJECT_DIR$/MasterMind.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/Game.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/Game.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/academy/mindswap/game/Game.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/commands/GameRules.txt" beforeDir="false" afterPath="$PROJECT_DIR$/resources/GameRules.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/messages/Messages.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/academy/mindswap/game/messages/Messages.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -42,12 +40,10 @@
 }</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/resources2" />
-      <recent name="$PROJECT_DIR$/src/academy/mindswap/game/resources" />
       <recent name="$PROJECT_DIR$/src/academy/mindswap/game/commands" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.GameLauncher">
+  <component name="RunManager" selected="Application.Player">
     <configuration name="GameLauncher" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="academy.mindswap.game.GameLauncher" />
       <module name="MasterMind" />
@@ -125,7 +121,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="Result_algorithm" />
+                        <option value="WaitingForNewPlayer" />
                       </list>
                     </value>
                   </entry>
@@ -141,12 +137,5 @@
     <MESSAGE value="Compare List ready" />
     <MESSAGE value="Working game!&#10;Needs to improve comparing algorithm..." />
     <option name="LAST_COMMIT_MESSAGE" value="Working game!&#10;Needs to improve comparing algorithm..." />
-  </component>
-  <component name="XDebuggerManager">
-    <watches-manager>
-      <configuration name="Application">
-        <watch expression="secretCode" />
-      </configuration>
-    </watches-manager>
   </component>
 </project>
