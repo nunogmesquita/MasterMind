@@ -1,0 +1,13 @@
+Your goal, as Decoder, is to crack the secret Code provided by CodeMaster, with the least number of attempts.
+
+The Code can be made up of any combination of the four numbers.
+The MasterCode can use two or more equal numbers, in different positions.
+
+You have to duplicate the exact numbers and positions of the hidden Code.
+
+After every guess, the CodeMaster must inform the Decoder of their progress using the following symbols:
+(+) Corresponds a correct number in the correct position.
+(-) Corresponds a correct number, but in the wrong position.
+( ) Wrong number.
+
+The server ends when the Decoder guesses the secret Code.
