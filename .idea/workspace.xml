@@ -6,17 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="b10b70de-bad9-4c01-a475-4a6e6a65c94a" name="Changes" comment="Working game!&#10;Needs to improve comparing algorithm...">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/Game$ClientConnectionHandler.class" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/Game.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/Game.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/commands/Command.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/commands/Command.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/commands/CommandHandler.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/commands/CommandHandler.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/commands/HelpHandler.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/commands/HelpHandler.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/player/Player$KeyboardHandler.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/player/Player$KeyboardHandler.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/player/Player.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/player/Player.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/academy/mindswap/game/Game.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/commands/CommandHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/academy/mindswap/game/commands/CommandHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/commands/HelpHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/academy/mindswap/game/commands/HelpHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/commands/QuitHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/academy/mindswap/game/commands/QuitHandler.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/messages/Messages.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/academy/mindswap/game/messages/Messages.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -27,7 +18,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="validate_player_input" />
+        <entry key="$PROJECT_DIR$" value="main" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -52,7 +43,7 @@
       <recent name="$PROJECT_DIR$/src/academy/mindswap/game/commands" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.GameLauncher">
+  <component name="RunManager" selected="Application.Player">
     <configuration name="GameLauncher" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="academy.mindswap.game.GameLauncher" />
       <module name="MasterMind" />
@@ -66,7 +57,7 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Player" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+    <configuration name="Player" type="Application" factoryName="Application" singleton="false" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="academy.mindswap.player.Player" />
       <module name="MasterMind" />
       <extension name="coverage">
@@ -79,10 +70,14 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <list>
+      <item itemvalue="Application.GameLauncher" />
+      <item itemvalue="Application.Player" />
+    </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.GameLauncher" />
         <item itemvalue="Application.Player" />
+        <item itemvalue="Application.GameLauncher" />
         <item itemvalue="Application.Player" />
         <item itemvalue="Application.GameLauncher" />
         <item itemvalue="Application.Player" />
@@ -126,7 +121,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="validate_player_input" />
+                        <option value="WaitingForNewPlayer" />
                       </list>
                     </value>
                   </entry>

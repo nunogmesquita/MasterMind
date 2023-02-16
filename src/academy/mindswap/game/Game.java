@@ -65,7 +65,7 @@ public class Game {
         ArrayList<String> boardToSend = null;
         for (PlayerConnectionHandler newPlayer : userBoardMap.keySet()) {
             if (newPlayer.getName().equals(playerConnectionHandler.getName())) {
-                boardToSend = userBoardMap.get(playerConnectionHandler.getName());
+                boardToSend = userBoardMap.get(playerConnectionHandler);
             }
         }
         if (boardToSend != null) {
@@ -137,22 +137,24 @@ public class Game {
         @Override
         public void run() {
             try {
+
                 addPlayer(this);
-                send(Messages.INSERT_TRY);
                 generateCode();
                 while (!win) {
                     System.out.println(secretCode);
+                    send(Messages.INSERT_TRY);
                     communicate();
                     checkWinner(playerGuess);
                     compareCodes(playerGuess, secretCode);
                     send(turnResult.toString());
-                    broadcastBoard(this);
+                    //broadcastBoard(this);
                 }
                 removePlayer(this);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
+
 
         private void addPlayer(PlayerConnectionHandler playerConnectionHandler) throws IOException {
             playersList.add(playerConnectionHandler);
@@ -161,12 +163,12 @@ public class Game {
             BufferedReader inputName = new BufferedReader(new InputStreamReader(playerSocket.getInputStream()));
             this.name = inputName.readLine();
             playerConnectionHandler.send(Messages.WELCOME.formatted(playerConnectionHandler.getName()));
+            playerConnectionHandler.send(waitForNewPlayer());
             playerConnectionHandler.send(readInstruction());
         }
-
         private String readInstruction() {
             try {
-                File file = new File("/Users/nunogilmesquita/Documents/mindswap_2023/MasterMind/src/academy/mindswap/game/commands/GameRules.txt");
+                File file = new File("C:\\code\\MindSwap2023\\src\\MasterMind\\src\\academy\\mindswap\\game\\commands\\GameRules.txt");
                 Scanner scanner = new Scanner(file);
 
                 StringBuilder stringBuilder = new StringBuilder();
@@ -180,6 +182,19 @@ public class Game {
                 System.out.println("File not found " + e.getMessage());
             }
             return null;
+        }
+        private String waitForNewPlayer() {
+
+            while(playersList.size() < numOfPlayers){
+                System.out.println("Waiting for " + (numOfPlayers - playersList.size()) + " more player(s) to join...");
+                try {
+                  Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            return "All players have joined. Starting the game...";
         }
 
         private void communicate() throws IOException {
