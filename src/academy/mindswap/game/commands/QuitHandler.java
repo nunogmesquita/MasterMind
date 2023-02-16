@@ -1,13 +1,12 @@
 package academy.mindswap.game.commands;
 
-import academy.mindswap.game.Game;
+import academy.mindswap.game.Server;
 
 public class QuitHandler implements CommandHandler {
 
     @Override
-    public void execute(Game game, Game.PlayerConnectionHandler playerConnectionHandler) {
-        game.removePlayer(playerConnectionHandler);
-        game.broadcast(playerConnectionHandler.getName(), playerConnectionHandler.getName() + " has left.");
-        playerConnectionHandler.close();
+    public void execute(Server server, Server.ConnectedPlayer connectedPlayer) {
+        server.removePlayer(connectedPlayer);
+        connectedPlayer.close();
     }
 }

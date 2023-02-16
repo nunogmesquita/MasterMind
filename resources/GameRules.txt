@@ -10,4 +10,4 @@ After every guess, the CodeMaster must inform the Decoder of their progress usin
 (-) Corresponds a correct number, but in the wrong position.
 ( ) Wrong number.
 
-The game ends when the Decoder guesses the secret Code.
+The server ends when the Decoder guesses the secret Code.
