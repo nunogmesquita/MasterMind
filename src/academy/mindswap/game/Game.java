@@ -12,13 +12,13 @@ public class Game {
 
     Server.ConnectedPlayer player;
 
-    List<Integer> playerGuess;
+    List<String> playerGuess;
 
     int attempts;
 
     Board board;
 
-    List<Integer> secretCode;
+    List<String> secretCode;
 
     List<String> turnResult;
 
@@ -52,7 +52,7 @@ public class Game {
         playerGuess = new ArrayList<>();
         this.attempts++;
         for (int i = 0; i < attempt.length(); i++) {
-            playerGuess.add(parseInt(String.valueOf(attempt.charAt(i))));
+            playerGuess.add(String.valueOf(attempt.charAt(i)));
         }
     }
 }

@@ -2,21 +2,20 @@ package academy.mindswap.game;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Random;
 
 public class Code {
 
-    static ArrayList<Integer> generateCode() {
-        ArrayList<Integer> code = new ArrayList<>();
-        for (int i = 0; i < 4; i++) {
-            int digit = new Random().nextInt(5);
-            code.add(digit);
+    static ArrayList<String> generateCode() {
+        ArrayList<String> code = new ArrayList<>();
+        ArrayList<String> possibleChoices = new ArrayList<>(Arrays.asList("G","B","Y","O","P"));
+        for (int i = 0; i < 4 ; i++) {
+            code.add(possibleChoices.get(new Random().nextInt(5)));
         }
         return code;
     }
 
-    static boolean rightGuess(Game game, List<Integer> playerGuess) {
+    static boolean rightGuess(Game game, List<String> playerGuess) {
         if (game.secretCode.equals(playerGuess)) {
             for (int i = 0; i < game.secretCode.size(); i++) {
                 game.turnResult.add("+");
