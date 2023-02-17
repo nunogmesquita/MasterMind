@@ -1,5 +1,7 @@
 package academy.mindswap.player;
 
+import academy.mindswap.game.messages.Messages;
+
 import java.io.*;
 import java.net.Socket;
 
@@ -10,7 +12,7 @@ public class Player {
         try {
             player.start();
         } catch (IOException e) {
-            System.out.println("Connection closed...");
+            System.out.println(Messages.CONNECTION_CLOSED);
         }
     }
 

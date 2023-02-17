@@ -19,7 +19,7 @@ public class Code {
     static boolean rightGuess(Game game, List<Integer> playerGuess) {
         if (game.secretCode.equals(playerGuess)) {
             for (int i = 0; i < game.secretCode.size(); i++) {
-                game.turnResult.set(i, "+");
+                game.turnResult.add("+");
             }
             game.rightGuess = true;
             return true;
@@ -28,8 +28,8 @@ public class Code {
     }
 
     static void compareCodes(Game game, List<Integer> playerGuess, List<Integer> secretCode) {
+        game.turnResult = new ArrayList<>();
         if (!rightGuess(game, playerGuess)) {
-            game.turnResult = new ArrayList<>();
             List<Integer> playerGuessCopy = new ArrayList<>(playerGuess);
             List<Integer> secretCodeCopy = new ArrayList<>(secretCode);
             for (int i = 0; i < playerGuess.size(); i++) {
