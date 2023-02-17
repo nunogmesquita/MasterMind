@@ -31,15 +31,16 @@ public class Game {
     public Game(Server.ConnectedPlayer connectedPlayer) {
         this.player = connectedPlayer;
         this.board = new Board();
-        this.secretCode = Code.generateCode();
-        System.out.println(secretCode);
     }
 
     public void play() throws IOException {
+        this.secretCode = Code.generateCode();
+        System.out.println(secretCode);
         while (!rightGuess) {
             try {
                 attempt = player.askForGuess();
-                validatePlay();
+                System.out.println("estou aqui?");
+                System.out.println(attempt);
                 checkPlayerGuess();
                 Code.compareCodes(this, playerGuess, secretCode);
                 board.printBoard(this);
@@ -47,24 +48,14 @@ public class Game {
                 throw new RuntimeException(e);
             }
         }
-        player.send("Congrats");
-    }
-
-    private void validatePlay() throws IOException {
-        String regex = "^\\d{4}$";
-        final Matcher matcher = Pattern.compile(regex).matcher(attempt);
-        if (!matcher.find()) {
-            player.send(Messages.INVALID_TRY);
-            play();
-        }
-        this.attempts++;
+        player.send(Messages.RIGHT_GUESS.formatted(attempts));
     }
 
     private void checkPlayerGuess() {
         playerGuess = new ArrayList<>();
+        this.attempts++;
         for (int i = 0; i < attempt.length(); i++) {
             playerGuess.add(parseInt(String.valueOf(attempt.charAt(i))));
         }
     }
-
 }

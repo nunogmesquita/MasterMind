@@ -11,4 +11,6 @@ public abstract class Messages {
     public static final String PLAYER_ERROR = "Something went wrong with this player's connection. Error: ";
     public static final String INVALID_TRY = "Please insert a valid 4 digits number.";
     public static final String INSERT_TRY = "Please insert a 4 digit code.";
+    public static final String WAITING_ALL_PLAYERS = "Waiting for %s player(s) to begin the game";
+    public static final String RIGHT_GUESS = "CONGRATULATIONS! You have found the secret code in %s attempts!";
 }

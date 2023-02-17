@@ -8,6 +8,8 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Server {
 
@@ -19,30 +21,41 @@ public class Server {
 
     protected final List<ConnectedPlayer> playersList;
 
-    public Server(int numOfPlayers) {
+    public Server(int port) throws IOException {
+        serverSocket = new ServerSocket(port);
         playersList = new CopyOnWriteArrayList<>();
-        this.numOfPlayers = numOfPlayers;
     }
 
-    public void start(int port) throws IOException, InterruptedException {
-        serverSocket = new ServerSocket(port);
+    public void start(int numOfPlayers) throws IOException, InterruptedException {
+        this.numOfPlayers = numOfPlayers;
         service = Executors.newFixedThreadPool(numOfPlayers);
         System.out.printf(Messages.GAME_STARTED);
-        acceptConnection();
+        while (playersList.size() < numOfPlayers) {
+            acceptConnection();
+        }
     }
 
     public void acceptConnection() throws IOException {
-        Socket playerSocket = serverSocket.accept();
+        Socket playerSocket = serverSocket.accept(); // blocking method
         ConnectedPlayer connectedPlayer = new ConnectedPlayer(playerSocket);
-        addPlayer(connectedPlayer);
         service.submit(connectedPlayer);
+//        for (int i = 0; i < Score.playerScore.size(); i++) {
+//            System.out.println(Score.playerScore);
+//        }
     }
 
-    private void addPlayer(ConnectedPlayer connectedPlayer) throws IOException {
+    private void addPlayer(ConnectedPlayer connectedPlayer) throws IOException, InterruptedException {
         playersList.add(connectedPlayer);
         connectedPlayer.send("Please insert your username:");
         connectedPlayer.name = new BufferedReader(new InputStreamReader(connectedPlayer.playerSocket.getInputStream())).readLine();
         connectedPlayer.send(Messages.WELCOME.formatted(connectedPlayer.getName()));
+        if (playersList.size() < numOfPlayers) {
+            connectedPlayer.send(Messages.WAITING_ALL_PLAYERS.formatted(numOfPlayers - playersList.size()));
+            while (playersList.size() < numOfPlayers) {
+                connectedPlayer.send(".");
+                Thread.sleep(1000);
+            }
+        }
     }
 
     public void removePlayer(ConnectedPlayer connectedPlayer) {
@@ -64,15 +77,18 @@ public class Server {
         public ConnectedPlayer(Socket playerSocket) throws IOException {
             this.playerSocket = playerSocket;
             this.out = new BufferedWriter(new OutputStreamWriter(playerSocket.getOutputStream()));
-            this.game = new Game(this);
+            game = new Game(this);
         }
 
         @Override
         public void run() {
             try {
+                addPlayer(this);
                 send(Instructions.readInstruction());
                 game.play();
             } catch (IOException e) {
+                throw new RuntimeException(e);
+            } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
         }
@@ -88,7 +104,21 @@ public class Server {
             } catch (IOException e) {
                 System.err.println(Messages.PLAYER_ERROR + e.getMessage());
             }
+            if (!validInput()) {
+                askForGuess();
+            }
             return message;
+        }
+
+        private boolean validInput() throws IOException {
+            String regex = "^\\d{4}$";
+            final Pattern pattern = Pattern.compile(regex);
+            final Matcher matcher = pattern.matcher(message);
+            if (!matcher.find()) {
+                send(Messages.INVALID_TRY);
+                return false;
+            }
+            return true;
         }
 
         private boolean isCommand(String message) {
