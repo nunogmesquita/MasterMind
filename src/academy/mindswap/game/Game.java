@@ -39,10 +39,10 @@ public class Game {
         while (!rightGuess) {
             try {
                 attempt = player.askForGuess();
-                System.out.println("estou aqui?");
-                System.out.println(attempt);
                 checkPlayerGuess();
+                System.out.println("estou aqui?");
                 Code.compareCodes(this, playerGuess, secretCode);
+                System.out.println(attempt);
                 board.printBoard(this);
             } catch (IOException e) {
                 throw new RuntimeException(e);
