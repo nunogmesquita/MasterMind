@@ -1,8 +1,6 @@
 package academy.mindswap.game;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class Code {
 
@@ -26,11 +24,11 @@ public class Code {
         return false;
     }
 
-    static void compareCodes(Game game, List<Integer> playerGuess, List<Integer> secretCode) {
+    static void compareCodes(Game game, List<String> playerGuess, List<String> secretCode) {
         game.turnResult = new ArrayList<>();
         if (!rightGuess(game, playerGuess)) {
-            List<Integer> playerGuessCopy = new ArrayList<>(playerGuess);
-            List<Integer> secretCodeCopy = new ArrayList<>(secretCode);
+            List<String> playerGuessCopy = new ArrayList<>(playerGuess);
+            List<String> secretCodeCopy = new ArrayList<>(secretCode);
             for (int i = 0; i < playerGuess.size(); i++) {
                 if (playerGuessCopy.get(i).equals(secretCodeCopy.get(i)) && playerGuessCopy.get(i) != null) {
                     game.turnResult.add("+");

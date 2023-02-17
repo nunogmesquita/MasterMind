@@ -116,9 +116,9 @@ public class Server {
         }
 
         private boolean validInput() {
-            String regex = "^\\d{4}$";
+            String regex = "^[OYBPG]{4}$";
             final Pattern pattern = Pattern.compile(regex);
-            final Matcher matcher = pattern.matcher(message);
+            final Matcher matcher = pattern.matcher(message.toUpperCase());
             if (!matcher.find()) {
                 send(Messages.INVALID_TRY);
                 return false;
