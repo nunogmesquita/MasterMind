@@ -5,8 +5,6 @@ import academy.mindswap.game.messages.Messages;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static java.lang.Integer.parseInt;
 
@@ -38,11 +36,10 @@ public class Game {
         System.out.println(secretCode);
         while (!rightGuess) {
             try {
+                player.send(Messages.INSERT_TRY);
                 attempt = player.askForGuess();
                 checkPlayerGuess();
-                System.out.println("estou aqui?");
                 Code.compareCodes(this, playerGuess, secretCode);
-                System.out.println(attempt);
                 board.printBoard(this);
             } catch (IOException e) {
                 throw new RuntimeException(e);

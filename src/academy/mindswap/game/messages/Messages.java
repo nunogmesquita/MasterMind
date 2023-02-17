@@ -13,4 +13,6 @@ public abstract class Messages {
     public static final String INSERT_TRY = "Please insert a 4 digit code.";
     public static final String WAITING_ALL_PLAYERS = "Waiting for %s player(s) to begin the game";
     public static final String RIGHT_GUESS = "CONGRATULATIONS! You have found the secret code in %s attempts!";
+    public static final String PLAYER_QUIT = " has quitted the game. Do you wish to continue?";
+    public static final String CONNECTION_CLOSED = "GAME OVER";
 }
