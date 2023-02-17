@@ -66,4 +66,5 @@ public class Game {
             playerGuess.add(parseInt(String.valueOf(attempt.charAt(i))));
         }
     }
+
 }

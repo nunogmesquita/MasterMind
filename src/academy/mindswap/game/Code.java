@@ -2,6 +2,7 @@ package academy.mindswap.game;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 public class Code {
@@ -17,6 +18,9 @@ public class Code {
 
     static boolean rightGuess(Game game, List<Integer> playerGuess) {
         if (game.secretCode.equals(playerGuess)) {
+            for (int i = 0; i < game.secretCode.size(); i++) {
+                game.turnResult.set(i, "+");
+            }
             game.rightGuess = true;
             return true;
         }
@@ -24,7 +28,7 @@ public class Code {
     }
 
     static void compareCodes(Game game, List<Integer> playerGuess, List<Integer> secretCode) {
-        while (!rightGuess(game, playerGuess)) {
+        if (!rightGuess(game, playerGuess)) {
             game.turnResult = new ArrayList<>();
             List<Integer> playerGuessCopy = new ArrayList<>(playerGuess);
             List<Integer> secretCodeCopy = new ArrayList<>(secretCode);
@@ -36,12 +40,10 @@ public class Code {
                 }
             }
 
-            for (int i = 0; i < playerGuess.size(); i++) {
-                if (secretCodeCopy.contains(playerGuessCopy.get(i)) && playerGuessCopy.get(i) != null) {
-                    game.turnResult.add("-");
-                    playerGuessCopy.set(i, null);
-                    secretCodeCopy.set(i, null);
-                }
+            for (int i = 0; i < playerGuessCopy.stream()
+                    .filter(secretCodeCopy::contains)
+                    .filter(Objects::nonNull).count(); i++) {
+                game.turnResult.add("-");
             }
             while (game.turnResult.size() != playerGuess.size()) {
                 game.turnResult.add(" ");
@@ -49,5 +51,6 @@ public class Code {
             playerGuessCopy.clear();
             secretCodeCopy.clear();
         }
+
     }
 }
