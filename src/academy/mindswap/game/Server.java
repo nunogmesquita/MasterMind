@@ -41,25 +41,18 @@ public class Server {
         service.submit(connectedPlayer);
     }
 
-    private void addPlayer(ConnectedPlayer connectedPlayer) throws IOException, InterruptedException {
+    private synchronized void addPlayer(ConnectedPlayer connectedPlayer) throws IOException, InterruptedException {
         playersList.add(connectedPlayer);
         connectedPlayer.send("Please insert your username:");
         welcomePlayer(connectedPlayer);
         if (playersList.size() < numOfPlayers) {
             connectedPlayer.send(Messages.WAITING_ALL_PLAYERS.formatted(numOfPlayers - playersList.size()));
-            while (playersList.size() < numOfPlayers) {
-                connectedPlayer.send(".");
-                Thread.sleep(1000);
-            }
-        }
+            this.wait();
+        } else this.notifyAll();
     }
 
     private void welcomePlayer(ConnectedPlayer connectedPlayer) throws IOException {
         connectedPlayer.name = new BufferedReader(new InputStreamReader(connectedPlayer.playerSocket.getInputStream())).readLine();
-        if (playersList.stream().map(player -> player.getName()).equals(connectedPlayer.name)) {
-            connectedPlayer.send("That name already exists. Please choose a new one.");
-            welcomePlayer(connectedPlayer);
-        }
         connectedPlayer.send(Messages.WELCOME.formatted(connectedPlayer.getName()));
     }
 
