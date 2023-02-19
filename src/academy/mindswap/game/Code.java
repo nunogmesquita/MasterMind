@@ -40,7 +40,7 @@ public class Code {
             for (int i = 0; i < playerGuessCopy.stream()
                     .filter(secretCodeCopy::contains)
                     .filter(Objects::nonNull).count(); i++) {
-                game.turnResult.add("-");
+                     game.turnResult.add("-");
             }
             while (game.turnResult.size() != playerGuess.size()) {
                 game.turnResult.add(" ");

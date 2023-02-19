@@ -1,59 +1,58 @@
 package academy.mindswap.game;
 
-import academy.mindswap.game.messages.Color;
+import academy.mindswap.game.messages.Items;
+import academy.mindswap.game.messages.Messages;
 
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class Board {
     List<String> board;
-
-   private static final String  WB ="\u001B[47m)";
-    private static final String R = "\u001B[0m";
-    ArrayList<Color> guessColor;
-    ArrayList<Color> resultColor;
+    ArrayList<String> guessColor;
+    ArrayList<String> resultColor;
 
     public Board() {
         this.board = new ArrayList<>();
     }
 
     public void printBoard(Game game) {
-        tansformGuessResult(game);
+        transformGuessResult(game);
         updateBoard();
-        for (Color color: Color.values()) {
-                game.player.send(color.toString());
-        }
+
+        game.player.send(Messages.LEGEND) ;
         for (String s : board) game.player.send(s);
     }
 
     public void updateBoard() {
-        String newTry = WB +"_______________________"+ R + "\n" +
-                  WB +"|  " + guessColor.get(0) +
-                "  |  " + guessColor.get(1) +
-                "  |  " + guessColor.get(2) +
-                "  |  " + guessColor.get(3) + "  |  " + " [==] "
-         + resultColor.get(0) +
-                resultColor.get(1) +
-                resultColor.get(2) +
-                resultColor.get(3) + R +  "\n" + WB + "_______________________     ____" + R;
-        board.add(newTry);
+        String newTry =  Items.WB.c +Items.HTBAR.c.repeat(48)+ Items.R.c + "\n" +
+                Items.WB.c + Items.VBAr.c + guessColor.get(0) + Items.WB.c+
+                Items.VBAr.c + guessColor.get(1) +Items.WB.c+
+                Items.VBAr.c + guessColor.get(2) +Items.WB.c+
+                Items.VBAr.c + guessColor.get(3) + Items.WB.c +Items.VBAr.c+Items.WB.c + " [==] "+
+                Items.WB.c + resultColor.get(0) + Items.WB.c+
+                resultColor.get(1) + Items.WB.c+
+                resultColor.get(2) + Items.WB.c+
+                resultColor.get(3) + Items.R.c+  "\n" + Items.WB.c
+                + Items.HBBAR.c.repeat(48)+ Items.R.c;
+                board.add(newTry);
     }
 
-    public void tansformGuessResult (Game game) {
+    public void transformGuessResult(Game game) {
         guessColor = new ArrayList<>();
         resultColor = new ArrayList<>();
         for (String letter : game.playerGuess) {
              switch (letter) {
-                case"G" -> guessColor.add(Color.GREEN);
-                case"B" -> guessColor.add(Color.BLUE);
-                case"Y" -> guessColor.add(Color.YELLOW);
-                case"O" -> guessColor.add(Color.ORANGE);
-                case"P" -> guessColor.add(Color.PURPLE);
+                case"G" -> guessColor.add(Items.GREEN.c);
+                case"B" -> guessColor.add(Items.BLUE.c);
+                case"Y" -> guessColor.add(Items.YELLOW.c);
+                case"O" -> guessColor.add(Items.ORANGE.c);
+                case"P" -> guessColor.add(Items.PURPLE.c);
             }
         }
         for (String symb : game.turnResult) {
-            if(symb.equals("+")) resultColor.add(Color.RED);
-            if(symb.equals("-")) resultColor.add(Color.BLACK);
-            resultColor.add(Color.White);}
+            if(symb.equals("+")) resultColor.add(Items.RED.c);
+            if(symb.equals("-")) resultColor.add(Items.BLACK.c);
+            if(symb.equals(" ")) resultColor.add(Items.WHITE.c);}
         }
     }

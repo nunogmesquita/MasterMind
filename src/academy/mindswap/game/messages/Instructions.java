@@ -1,7 +1,5 @@
 package academy.mindswap.game.messages;
 
-import academy.mindswap.game.Game;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
@@ -11,10 +9,10 @@ public class Instructions {
     public static String readInstruction() {
         try {
 
-            for (Color color: Color.values()) {
-                System.out.println(color.toString());
-
-            }
+//            for (Items color: Items.values()) {
+//                System.out.println(color.toString());
+//
+//            }
             File file = new File("resources/GameRules.txt");
             Scanner scanner = new Scanner(file);
 

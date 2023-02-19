@@ -9,31 +9,35 @@ import java.util.List;
 import static java.lang.Integer.parseInt;
 
 public class Game {
-
     Server.ConnectedPlayer player;
-
     List<String> playerGuess;
-
     int attempts;
-
     Board board;
-
     List<String> secretCode;
-
     List<String> turnResult;
-
     String attempt;
+
+
+    ArrayList<String> opCode;
+
+
+//    HashMap<String,Integer> attemptMap;
 
     boolean rightGuess = false;
 
+    public Game(Server.ConnectedPlayer connectedPlayer, ArrayList<String> code) {
+        this.player = connectedPlayer;
+        this.board = new Board();
+        this.secretCode = code;
+    }
     public Game(Server.ConnectedPlayer connectedPlayer) {
         this.player = connectedPlayer;
         this.board = new Board();
+        this.secretCode = Code.generateCode();
     }
 
     public void play() throws IOException {
-        this.secretCode = Code.generateCode();
-        System.out.println(secretCode);
+        System.out.println(secretCode + " " + this.player.getName());
         while (!rightGuess) {
             try {
                 player.send(Messages.INSERT_TRY);
@@ -52,7 +56,9 @@ public class Game {
         playerGuess = new ArrayList<>();
         this.attempts++;
         for (int i = 0; i < attempt.length(); i++) {
-            playerGuess.add(String.valueOf(attempt.charAt(i)));
+           playerGuess.add(String.valueOf(attempt.charAt(i)));
         }
     }
+
+
 }

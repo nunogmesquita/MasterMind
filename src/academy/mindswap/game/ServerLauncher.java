@@ -8,7 +8,6 @@ public class ServerLauncher {
 
         try {
             Server server = new Server(8082);
-
             server.start(2);
         } catch (IOException e) {
             e.printStackTrace();
