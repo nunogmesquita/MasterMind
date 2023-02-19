@@ -1,6 +1,7 @@
 package academy.mindswap.game;
 
 import academy.mindswap.game.commands.Command;
+import academy.mindswap.game.messages.Color;
 import academy.mindswap.game.messages.Instructions;
 import academy.mindswap.game.messages.Messages;
 
@@ -42,18 +43,47 @@ public class Server {
     }
 
     private synchronized void addPlayer(ConnectedPlayer connectedPlayer) throws IOException, InterruptedException {
-        playersList.add(connectedPlayer);
-        connectedPlayer.send("Please insert your username:");
+        verifyPlayerName(connectedPlayer, playersList);
         welcomePlayer(connectedPlayer);
+        playersList.add(connectedPlayer);
         if (playersList.size() < numOfPlayers) {
             connectedPlayer.send(Messages.WAITING_ALL_PLAYERS.formatted(numOfPlayers - playersList.size()));
             this.wait();
         } else this.notifyAll();
     }
 
-    private void welcomePlayer(ConnectedPlayer connectedPlayer) throws IOException {
-        connectedPlayer.name = new BufferedReader(new InputStreamReader(connectedPlayer.playerSocket.getInputStream())).readLine();
-        connectedPlayer.send(Messages.WELCOME.formatted(connectedPlayer.getName()));
+    private void verifyPlayerName(ConnectedPlayer connectedPlayer, List<ConnectedPlayer> playersList) throws IOException, InterruptedException {
+        connectedPlayer.send(Messages.ASK_NAME);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(connectedPlayer.playerSocket.getInputStream()));
+        String playerName = reader.readLine();
+        validateName(connectedPlayer, playerName);
+        if (true) {
+            if (playersList.stream().
+                    anyMatch(player -> player.getName().
+                            equals(playerName))) {
+                connectedPlayer.send(Messages.INVALID_NAME);
+                verifyPlayerName(connectedPlayer, playersList);
+            } else {
+                connectedPlayer.name = playerName;
+            }
+        }
+    }
+
+    private boolean validateName(ConnectedPlayer connectedPlayer, String name) throws IOException, InterruptedException {
+        String regex = "^\\S+$";
+        final Pattern pattern = Pattern.compile(regex);
+        final Matcher matcher = pattern.matcher(name);
+        if (!matcher.find()) {
+            connectedPlayer.send(Messages.INVALID_FIRST_NAME);
+            verifyPlayerName(connectedPlayer,playersList);
+            return false;
+        }
+        return true;
+    }
+
+    private void welcomePlayer(ConnectedPlayer connectedPlayer) {
+      // connectedPlayer.name = new BufferedReader(new InputStreamReader(connectedPlayer.playerSocket.getInputStream())).readLine();
+       connectedPlayer.send(Messages.WELCOME.formatted(connectedPlayer.getName()));
     }
 
     public void removePlayer(ConnectedPlayer connectedPlayer) {
@@ -69,15 +99,10 @@ public class Server {
     public class ConnectedPlayer implements Runnable {
 
         private String name;
-
         private final Socket playerSocket;
-
         private final BufferedWriter out;
-
         private String message;
-
         Game game;
-
         public ConnectedPlayer(Socket playerSocket) throws IOException {
             this.playerSocket = playerSocket;
             this.out = new BufferedWriter(new OutputStreamWriter(playerSocket.getOutputStream()));
@@ -115,6 +140,17 @@ public class Server {
             return null;
         }
 
+        public void showCode(ConnectedPlayer connectedPlayer) {
+            connectedPlayer.send(Messages.SHOW_CODE.formatted(game.getSecretCode()));
+        }
+
+        public void startNewGame(){
+            try {
+                game.play();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
         private boolean validInput() {
             String regex = "^[OYBPG]{4}$";
             final Pattern pattern = Pattern.compile(regex);
@@ -165,5 +201,6 @@ public class Server {
         public String getName() {
             return name;
         }
+
     }
 }

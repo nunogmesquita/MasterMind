@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.lang.Integer.parseInt;
 
 public class Game {
 
@@ -46,6 +45,7 @@ public class Game {
             }
         }
         player.send(Messages.RIGHT_GUESS.formatted(attempts));
+        player.send(Messages.QUIT_OR_NEW_GAME);
     }
 
     private void checkPlayerGuess() {
@@ -54,5 +54,9 @@ public class Game {
         for (int i = 0; i < attempt.length(); i++) {
             playerGuess.add(String.valueOf(attempt.charAt(i)));
         }
+    }
+
+    public List<String> getSecretCode() {
+        return secretCode;
     }
 }
