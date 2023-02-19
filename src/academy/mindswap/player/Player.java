@@ -1,5 +1,6 @@
 package academy.mindswap.player;
 
+import academy.mindswap.game.Server;
 import academy.mindswap.game.messages.Messages;
 
 import java.io.*;
@@ -45,6 +46,7 @@ public class Player {
             while (!socket.isClosed()) {
                 try {
                     String line = in.readLine();
+                    line = line.toLowerCase();
 
                     out.write(line);
                     out.newLine();
@@ -54,6 +56,7 @@ public class Player {
                         socket.close();
                         System.exit(0);
                     }
+
                 } catch (IOException e) {
                     System.out.println(Messages.SERVER_ERROR);
                     try {

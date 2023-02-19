@@ -17,14 +17,16 @@ public class Server {
     private final ServerSocket serverSocket;
 
     private ExecutorService service;
-
+    private List <ConnectedPlayer> p2pList;
     int numOfPlayers;
-
+    public HashMap<Integer,ArrayList<String>> playerCodes;
     protected final List<ConnectedPlayer> playersList;
 
     public Server(int port) throws IOException {
         serverSocket = new ServerSocket(port);
         playersList = new CopyOnWriteArrayList<>();
+        playerCodes = new HashMap<>();
+        p2pList = new CopyOnWriteArrayList<>();
     }
 
     public void start(int numOfPlayers) throws IOException, InterruptedException {
@@ -49,7 +51,25 @@ public class Server {
         if (playersList.size() < numOfPlayers) {
             connectedPlayer.send(Messages.WAITING_ALL_PLAYERS.formatted(numOfPlayers - playersList.size()));
             this.wait();
-        } else this.notifyAll();
+        } else {
+            this.notifyAll();
+        }
+    }
+
+
+
+    public synchronized Game getGame(ConnectedPlayer player) throws InterruptedException {
+        if(p2pList.size() == 2) {
+            ArrayList<String> code;
+            if (playersList.get(0).getName().equalsIgnoreCase(player.getName())) {
+                code = playerCodes.get(2);
+            } else {
+                code = playerCodes.get(1);
+            }
+            return new Game(player, code);
+        } else {
+            return new Game(player);
+        }
     }
 
     private void verifyPlayerName(ConnectedPlayer connectedPlayer, List<ConnectedPlayer> playersList) throws IOException, InterruptedException {
@@ -99,10 +119,16 @@ public class Server {
     public class ConnectedPlayer implements Runnable {
 
         private String name;
+
         private final Socket playerSocket;
+
         private final BufferedWriter out;
+
         private String message;
+
         Game game;
+        private String gameMode;
+
         public ConnectedPlayer(Socket playerSocket) throws IOException {
             this.playerSocket = playerSocket;
             this.out = new BufferedWriter(new OutputStreamWriter(playerSocket.getOutputStream()));
@@ -114,6 +140,9 @@ public class Server {
             try {
                 addPlayer(this);
                 send(Instructions.readInstruction());
+                send(Messages.RESULT_RULES  +  Messages.LEGEND);
+                askGameMode();
+                game = getGame(this);
                 game.play();
             } catch (IOException | InterruptedException e) {
                 throw new RuntimeException(e);
@@ -153,8 +182,9 @@ public class Server {
         }
         private boolean validInput() {
             String regex = "^[OYBPG]{4}$";
+            message = message.toUpperCase();
             final Pattern pattern = Pattern.compile(regex);
-            final Matcher matcher = pattern.matcher(message.toUpperCase());
+            final Matcher matcher = pattern.matcher(message);
             if (!matcher.find()) {
                 send(Messages.INVALID_TRY);
                 return false;
@@ -176,6 +206,34 @@ public class Server {
                 return;
             }
             command.getHandler().execute(Server.this, this);
+        }
+
+        private void askGameMode() throws IOException, InterruptedException {
+            this.send(Messages.GAME_MODE);
+            gameMode = new BufferedReader(new InputStreamReader(this.playerSocket.getInputStream())).readLine();
+            if(gameMode.equals("2")) {
+                p2pList.add(this);
+                if(p2pList.size() == 2) {
+                    this.notifyAll();
+                    this.askForOpponentCode();
+                } else {
+                    this.send(Messages.WAITING_ALL_PLAYERS);
+                    this.wait();
+                }} // aplicar aqui um wait para que p2pList tenha 2 de size()
+        }
+
+        public void askForOpponentCode() throws IOException {
+            this.send(Messages.OPPONENT_CODE);
+            String stringCode = askForGuess();
+            ArrayList<String> opCode = new ArrayList<>();
+            for (int i = 0; i < stringCode.length(); i++) {
+                opCode.add(String.valueOf(stringCode.charAt(i)));
+            }
+            if (playerCodes.size() != 1) {
+                playerCodes.put(1, opCode);
+            } else {
+                playerCodes.put(2, opCode);
+            }
         }
 
         public void send(String message) {
@@ -202,5 +260,8 @@ public class Server {
             return name;
         }
 
+        public String getGameMode() {
+            return gameMode;
+        }
     }
 }
