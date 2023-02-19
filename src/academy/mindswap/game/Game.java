@@ -40,11 +40,10 @@ public class Game {
     public Game(Server.ConnectedPlayer connectedPlayer) {
         this.player = connectedPlayer;
         this.board = new Board();
-    }
-
-    public void play() throws IOException {
         this.secretCode = Code.generateCode();
     }
+
+
 
     public void play() throws IOException {
         System.out.println(secretCode + " " + this.player.getName());

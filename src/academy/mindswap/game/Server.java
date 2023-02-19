@@ -1,7 +1,6 @@
 package academy.mindswap.game;
 
 import academy.mindswap.game.commands.Command;
-import academy.mindswap.game.messages.Color;
 import academy.mindswap.game.messages.Instructions;
 import academy.mindswap.game.messages.Messages;
 
