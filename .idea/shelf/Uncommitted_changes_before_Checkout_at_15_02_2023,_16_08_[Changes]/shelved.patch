@@ -1,0 +1,118 @@
+Index: src/academy/mindswap/game/Game.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package academy.mindswap.game;\n\nimport academy.mindswap.game.commands.Command;\nimport academy.mindswap.game.messages.Messages;\n\nimport java.io.*;\nimport java.net.*;\nimport java.util.*;\nimport java.util.concurrent.*;\n\npublic class Game {\n    private ServerSocket serverSocket;\n    private ExecutorService service;\n    private final List<ClientConnectionHandler> playersList;\n    private BufferedWriter outputName;\n\n    private HashMap<String, Socket> userSocketMap;\n\n    private HashMap<ClientConnectionHandler, ArrayList<String>> userBoardMap;\n\n    public Game() {\n        playersList = new CopyOnWriteArrayList<>();\n        userSocketMap = new HashMap<>();\n    }\n\n    public void start(int port) throws IOException {\n        serverSocket = new ServerSocket(port);\n        service = Executors.newFixedThreadPool(2);\n        System.out.printf(Messages.SERVER_STARTED, port);\n\n        while (true) {\n            acceptConnection();\n        }\n    }\n\n\n    public void acceptConnection() throws IOException {\n        Socket clientSocket = serverSocket.accept();\n        outputName = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));\n        outputName.write(\"Please insert your name!\");\n        outputName.newLine();\n        outputName.flush();\n//        Scanner scannerIn = new Scanner(clientSocket.getInputStream());\n        BufferedReader inputName = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));\n        String username = inputName.readLine();\n        ClientConnectionHandler clientConnectionHandler =\n                new ClientConnectionHandler(clientSocket, username);\n//        userSocketMap.put(username, clientSocket);\n        service.submit(clientConnectionHandler);\n    }\n\n    private void addClient(ClientConnectionHandler clientConnectionHandler) {\n        playersList.add(clientConnectionHandler);\n        userSocketMap.put(clientConnectionHandler.getName(), clientConnectionHandler.getClientSocket());\n        clientConnectionHandler.send(Messages.WELCOME.formatted(clientConnectionHandler.getName()));\n//        clientConnectionHandler.send(Messages.COMMANDS_LIST);\n//        broadcast(clientConnectionHandler.getName(), Messages.CLIENT_ENTERED_CHAT);   este broadcast vai imprimir as regras do jogo que vao estar presentes no gamerules.txt\n    }\n\n\n//    public String listClients() {\n//        StringBuffer buffer = new StringBuffer();\n//        clients.forEach(client -> buffer.append(client.getName()).append(\"\\n\"));\n//        return buffer.toString();\n//    }\n\n    public void removeClient(ClientConnectionHandler clientConnectionHandler) {\n        playersList.remove(clientConnectionHandler);\n    }\n\n    public Optional<ClientConnectionHandler> getClientByName(String name) {\n        return playersList.stream()\n                .filter(clientConnectionHandler -> clientConnectionHandler.getName().equalsIgnoreCase(name))\n                .findFirst();\n    }\n\n\n    public void broadcastBoard(ClientConnectionHandler clientConnectionHandler) {\n        ArrayList<String> boardToSend = null;\n        for (ClientConnectionHandler newClient : userBoardMap.keySet()) {\n            if (newClient.getName().equals(clientConnectionHandler.getName())) {\n                boardToSend = userBoardMap.get(clientConnectionHandler.getName());\n            }\n        }\n        if(boardToSend != null) {\n        for (int i = 0; i < boardToSend.size(); i++) {\n            clientConnectionHandler.send(boardToSend.get(i));\n        }\n        }\n    }\n\n    public void updateBoard(ClientConnectionHandler client, List result) {\n        String newTry = (\" _______________________ \\n\" + \"|  \" + client.getGuess[0] + \"  |  \" + playerGuess[1] + \"  |  \" + playerGuess[2] + \"  |  \" + playerGuess[3] + \"  |  \" + \" [==] \"\n                + result[0] + result[1] + result[2] + result[3] + \"\\n_______________________    ____\");\n        ArrayList<String> boardNewCopy;\n        for (ClientConnectionHandler clientConnectionHandler :userBoardMap.keySet()) {\n            if (client.getName().equals(clientConnectionHandler.getName())) {\n                boardNewCopy =  userBoardMap.get(clientConnectionHandler.getName());\n                boardNewCopy.add(newTry);\n                userBoardMap.put(clientConnectionHandler, boardNewCopy);\n            }\n        }\n    }\n\n\n    public class ClientConnectionHandler implements Runnable {\n        private String name;\n        private final Socket clientSocket;\n        private final BufferedWriter out;\n        private ArrayList<String> board;\n        private int turn;\n\n        public ClientConnectionHandler(Socket clientSocket, String name) throws IOException {\n            this.clientSocket = clientSocket;\n            this.name = name;\n            this.out = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));\n\n        }\n\n\n        @Override\n        public void run() {\n            addClient(this);\n            try {\n                while (checkWinner()) {\n\n                    turn++;\n                     updateBoard(this, result);\n                     broadcastBoard(this);\n                }\n            } catch (IOException e) {\n                System.err.println(Messages.CLIENT_ERROR + e.getMessage());\n            } finally {\n                removeClient(this);\n            }\n        }\n\n        private boolean isCommand(String message) {\n            return message.startsWith(\"/\");\n        }\n\n        private void dealWithCommand(String message) throws IOException {\n            String description = message.split(\" \")[0];\n            Command command = Command.getCommandFromDescription(description);\n\n            if (command == null) {\n                out.write(Messages.NO_SUCH_COMMAND);\n                out.newLine();\n                out.flush();\n                return;\n            }\n\n            command.getHandler().execute(Game.this, this);\n        }\n\n        public void send(String message) {\n            try {\n                out.write(message);\n                out.newLine();\n                out.flush();\n            } catch (IOException e) {\n                removeClient(this);\n                e.printStackTrace();\n            }\n        }\n\n        public void close() {\n            try {\n                clientSocket.close();\n            } catch (IOException e) {\n                e.printStackTrace();\n            }\n        }\n\n        public String getName() {\n            return name;\n        }\n\n        public void setName(String name) {\n            this.name = name;\n        }\n\n        public String getMessage() {\n            return message;\n        }\n\n        public Socket getClientSocket() {\n            return clientSocket;\n        }\n\n//        public void updateBoard(String user, List playerGuess, List result) {\n//            String newTry = this.board.add(\" _______________________ \\n\" + \"|  \" + playerGuess[0] + \"  |  \" + playerGuess[1] + \"  |  \" + playerGuess[2] + \"  |  \" + playerGuess[3] + \"  |  \" + \" [==] \"\n//                    + result[0] + result[1] + result[2] + result[3] + \"\\n_______________________    ____\");\n//            ArrayList<String> boardToUpdate;\n//            for (ClientConnectionHandler clientConnectionHandler : ) {\n//                if (user.equals(clientConnectionHandler.getName())) {\n//                    boardToUpdate =  userBoardMap.get(name);\n//                    boardToUpdate.add(newTry);\n//                    userBoardMap.put(name, boardToUpdate);\n//                }\n//            }\n//        }\n\n//        public void broadcastBoard(String user) {\n//            ArrayList<String> boardToSend = new ArrayList<>();\n////            Socket socketToSend = new Socket();\n//            for (String nameForBoard : userBoardMap.keySet()) {\n//                if (user.equals(nameForBoard)) {\n//                    boardToSend = userBoardMap.get(nameForBoard);\n//                }\n////                for (String nameForSocket : userSocketMap.keySet()) {\n////                    if (user.equals(nameForSocket)) {\n////                        socketToSend = userSocketMap.get(nameForSocket);\n////                    }\n////                }\n//            }\n//            for (int i = 0; i < boardToSend.size(); i++) {\n//                send(boardToSend.get(i));\n//            }\n\n\n        }\n\n}\n\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/academy/mindswap/game/Game.java b/src/academy/mindswap/game/Game.java
+--- a/src/academy/mindswap/game/Game.java	
++++ b/src/academy/mindswap/game/Game.java	
+@@ -13,14 +13,13 @@
+     private ExecutorService service;
+     private final List<ClientConnectionHandler> playersList;
+     private BufferedWriter outputName;
+-
+     private HashMap<String, Socket> userSocketMap;
+-
+     private HashMap<ClientConnectionHandler, ArrayList<String>> userBoardMap;
+ 
+     public Game() {
+         playersList = new CopyOnWriteArrayList<>();
+         userSocketMap = new HashMap<>();
++        userBoardMap = new HashMap<>();
+     }
+ 
+     public void start(int port) throws IOException {
+@@ -68,14 +67,15 @@
+         playersList.remove(clientConnectionHandler);
+     }
+ 
+-    public Optional<ClientConnectionHandler> getClientByName(String name) {
+-        return playersList.stream()
+-                .filter(clientConnectionHandler -> clientConnectionHandler.getName().equalsIgnoreCase(name))
+-                .findFirst();
+-    }
++//    public Optional<ClientConnectionHandler> getClientByName(String name) {
++//        return playersList.stream()
++//                .filter(clientConnectionHandler -> clientConnectionHandler.getName().equalsIgnoreCase(name))
++//                .findFirst();
++//    }
+ 
+ 
+     public void broadcastBoard(ClientConnectionHandler clientConnectionHandler) {
++
+         ArrayList<String> boardToSend = null;
+         for (ClientConnectionHandler newClient : userBoardMap.keySet()) {
+             if (newClient.getName().equals(clientConnectionHandler.getName())) {
+@@ -90,7 +90,7 @@
+     }
+ 
+     public void updateBoard(ClientConnectionHandler client, List result) {
+-        String newTry = (" _______________________ \n" + "|  " + client.getGuess[0] + "  |  " + playerGuess[1] + "  |  " + playerGuess[2] + "  |  " + playerGuess[3] + "  |  " + " [==] "
++        String newTry = (" _______________________ \n" + "|  " + client.[0] + "  |  " + playerGuess[1] + "  |  " + playerGuess[2] + "  |  " + playerGuess[3] + "  |  " + " [==] "
+                 + result[0] + result[1] + result[2] + result[3] + "\n_______________________    ____");
+         ArrayList<String> boardNewCopy;
+         for (ClientConnectionHandler clientConnectionHandler :userBoardMap.keySet()) {
+@@ -108,13 +108,13 @@
+         private final Socket clientSocket;
+         private final BufferedWriter out;
+         private ArrayList<String> board;
++        private ArrayList<String> playerGuess;
+         private int turn;
+ 
+         public ClientConnectionHandler(Socket clientSocket, String name) throws IOException {
+             this.clientSocket = clientSocket;
+             this.name = name;
+             this.out = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
+-
+         }
+ 
+ 
+@@ -188,6 +188,8 @@
+             return clientSocket;
+         }
+ 
++
++
+ //        public void updateBoard(String user, List playerGuess, List result) {
+ //            String newTry = this.board.add(" _______________________ \n" + "|  " + playerGuess[0] + "  |  " + playerGuess[1] + "  |  " + playerGuess[2] + "  |  " + playerGuess[3] + "  |  " + " [==] "
+ //                    + result[0] + result[1] + result[2] + result[3] + "\n_______________________    ____");
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project version=\"4\">\n  <component name=\"AutoImportSettings\">\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\n  </component>\n  <component name=\"ChangeListManager\">\n    <list default=\"true\" id=\"b10b70de-bad9-4c01-a475-4a6e6a65c94a\" name=\"Changes\" comment=\"\">\n      <change beforePath=\"$PROJECT_DIR$/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/Game$ClientConnectionHandler.class\" beforeDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/Game.class\" beforeDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/GameLauncher.class\" beforeDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/commands/CommandHandler.class\" beforeDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/commands/HelpHandler.class\" beforeDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/commands/ListHandler.class\" beforeDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/commands/NameHandler.class\" beforeDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/commands/QuitHandler.class\" beforeDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/commands/ShoutHandler.class\" beforeDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/commands/WhisperHandler.class\" beforeDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/src/academy/mindswap/game/Game.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/academy/mindswap/game/Game.java\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/src/academy/mindswap/game/commands/GameRules.txt\" beforeDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/src/academy/mindswap/player/Player.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/academy/mindswap/player/Player.java\" afterDir=\"false\" />\n    </list>\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\n  </component>\n  <component name=\"FileTemplateManagerImpl\">\n    <option name=\"RECENT_TEMPLATES\">\n      <list>\n        <option value=\"Class\" />\n      </list>\n    </option>\n  </component>\n  <component name=\"Git.Settings\">\n    <option name=\"RECENT_BRANCH_BY_REPOSITORY\">\n      <map>\n        <entry key=\"$PROJECT_DIR$\" value=\"main\" />\n      </map>\n    </option>\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\n  </component>\n  <component name=\"MarkdownSettingsMigration\">\n    <option name=\"stateVersion\" value=\"1\" />\n  </component>\n  <component name=\"ProjectId\" id=\"2LjqGL2HZyfupAbklzWsPOHvqee\" />\n  <component name=\"ProjectViewState\">\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\n    <option name=\"showLibraryContents\" value=\"true\" />\n  </component>\n  <component name=\"PropertiesComponent\">{\n  &quot;keyToString&quot;: {\n    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,\n    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;\n  }\n}</component>\n  <component name=\"RecentsManager\">\n    <key name=\"MoveFile.RECENT_KEYS\">\n      <recent name=\"$PROJECT_DIR$/src/academy/mindswap/game/commands\" />\n    </key>\n  </component>\n  <component name=\"RunManager\" selected=\"Application.asdasd\">\n    <configuration name=\"GameLauncher\" type=\"Application\" factoryName=\"Application\" temporary=\"true\" nameIsGenerated=\"true\">\n      <option name=\"MAIN_CLASS_NAME\" value=\"academy.mindswap.game.GameLauncher\" />\n      <module name=\"MasterMind\" />\n      <extension name=\"coverage\">\n        <pattern>\n          <option name=\"PATTERN\" value=\"academy.mindswap.game.*\" />\n          <option name=\"ENABLED\" value=\"true\" />\n        </pattern>\n      </extension>\n      <method v=\"2\">\n        <option name=\"Make\" enabled=\"true\" />\n      </method>\n    </configuration>\n    <configuration name=\"Player\" type=\"Application\" factoryName=\"Application\" temporary=\"true\" nameIsGenerated=\"true\">\n      <option name=\"MAIN_CLASS_NAME\" value=\"academy.mindswap.player.Player\" />\n      <module name=\"MasterMind\" />\n      <extension name=\"coverage\">\n        <pattern>\n          <option name=\"PATTERN\" value=\"academy.mindswap.player.*\" />\n          <option name=\"ENABLED\" value=\"true\" />\n        </pattern>\n      </extension>\n      <method v=\"2\">\n        <option name=\"Make\" enabled=\"true\" />\n      </method>\n    </configuration>\n    <configuration name=\"asdasd\" type=\"Application\" factoryName=\"Application\" temporary=\"true\" nameIsGenerated=\"true\">\n      <option name=\"MAIN_CLASS_NAME\" value=\"asdasd\" />\n      <module name=\"MasterMind\" />\n      <method v=\"2\">\n        <option name=\"Make\" enabled=\"true\" />\n      </method>\n    </configuration>\n    <recent_temporary>\n      <list>\n        <item itemvalue=\"Application.asdasd\" />\n        <item itemvalue=\"Application.Player\" />\n        <item itemvalue=\"Application.GameLauncher\" />\n        <item itemvalue=\"Application.Player\" />\n        <item itemvalue=\"Application.GameLauncher\" />\n      </list>\n    </recent_temporary>\n  </component>\n  <component name=\"SpellCheckerSettings\" RuntimeDictionaries=\"0\" Folders=\"0\" CustomDictionaries=\"0\" DefaultDictionary=\"application-level\" UseSingleDictionary=\"true\" transferred=\"true\" />\n  <component name=\"TaskManager\">\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\n      <changelist id=\"b10b70de-bad9-4c01-a475-4a6e6a65c94a\" name=\"Changes\" comment=\"\" />\n      <created>1676394744034</created>\n      <option name=\"number\" value=\"Default\" />\n      <option name=\"presentableId\" value=\"Default\" />\n      <updated>1676394744034</updated>\n    </task>\n    <task id=\"LOCAL-00001\" summary=\"first changes\">\n      <created>1676401646419</created>\n      <option name=\"number\" value=\"00001\" />\n      <option name=\"presentableId\" value=\"LOCAL-00001\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1676401646419</updated>\n    </task>\n    <option name=\"localTasksCounter\" value=\"2\" />\n    <servers />\n  </component>\n  <component name=\"Vcs.Log.Tabs.Properties\">\n    <option name=\"TAB_STATES\">\n      <map>\n        <entry key=\"MAIN\">\n          <value>\n            <State>\n              <option name=\"FILTERS\">\n                <map>\n                  <entry key=\"branch\">\n                    <value>\n                      <list>\n                        <option value=\"ReinaldoDraft\" />\n                      </list>\n                    </value>\n                  </entry>\n                </map>\n              </option>\n            </State>\n          </value>\n        </entry>\n      </map>\n    </option>\n  </component>\n  <component name=\"VcsManagerConfiguration\">\n    <MESSAGE value=\"first changes\" />\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"first changes\" />\n  </component>\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	
++++ b/.idea/workspace.xml	
+@@ -6,19 +6,7 @@
+   <component name="ChangeListManager">
+     <list default="true" id="b10b70de-bad9-4c01-a475-4a6e6a65c94a" name="Changes" comment="">
+       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/Game$ClientConnectionHandler.class" beforeDir="false" />
+-      <change beforePath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/Game.class" beforeDir="false" />
+-      <change beforePath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/GameLauncher.class" beforeDir="false" />
+-      <change beforePath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/commands/CommandHandler.class" beforeDir="false" />
+-      <change beforePath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/commands/HelpHandler.class" beforeDir="false" />
+-      <change beforePath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/commands/ListHandler.class" beforeDir="false" />
+-      <change beforePath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/commands/NameHandler.class" beforeDir="false" />
+-      <change beforePath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/commands/QuitHandler.class" beforeDir="false" />
+-      <change beforePath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/commands/ShoutHandler.class" beforeDir="false" />
+-      <change beforePath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/commands/WhisperHandler.class" beforeDir="false" />
+       <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/academy/mindswap/game/Game.java" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/commands/GameRules.txt" beforeDir="false" />
+-      <change beforePath="$PROJECT_DIR$/src/academy/mindswap/player/Player.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/academy/mindswap/player/Player.java" afterDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+@@ -44,6 +32,7 @@
+     <option name="stateVersion" value="1" />
+   </component>
+   <component name="ProjectId" id="2LjqGL2HZyfupAbklzWsPOHvqee" />
++  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+   <component name="ProjectViewState">
+     <option name="hideEmptyMiddlePackages" value="true" />
+     <option name="showLibraryContents" value="true" />

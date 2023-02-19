@@ -4,29 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b10b70de-bad9-4c01-a475-4a6e6a65c94a" name="Changes" comment="Duo players working">
-      <change afterPath="$PROJECT_DIR$/src/academy/mindswap/game/commands/ShowHandler.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/academy/mindswap/game/commands/StartNewGameHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/MasterMind/GameRules.txt" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/MasterMind/GameRules.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/Game.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/Game.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/Server$ConnectedPlayer.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/Server$ConnectedPlayer.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/Server.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/Server.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/commands/Command.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/commands/Command.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/commands/HelpHandler.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/commands/HelpHandler.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/messages/Instructions.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/messages/Instructions.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/messages/Messages.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/messages/Messages.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/player/Player$KeyboardHandler.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/player/Player$KeyboardHandler.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/player/Player.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/player/Player.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/GameRules.txt" beforeDir="false" afterPath="$PROJECT_DIR$/resources/GameRules.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/academy/mindswap/game/Game.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/academy/mindswap/game/Server.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/commands/Command.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/academy/mindswap/game/commands/Command.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/messages/Color.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/academy/mindswap/game/messages/Color.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/messages/Instructions.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/academy/mindswap/game/messages/Instructions.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/messages/Messages.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/academy/mindswap/game/messages/Messages.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/academy/mindswap/player/Player.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/academy/mindswap/player/Player.java" afterDir="false" />
-    </list>
+    <list default="true" id="b10b70de-bad9-4c01-a475-4a6e6a65c94a" name="Changes" comment="Duo players working" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -42,7 +20,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="main" />
+        <entry key="$PROJECT_DIR$" value="FixBoardPrint" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />

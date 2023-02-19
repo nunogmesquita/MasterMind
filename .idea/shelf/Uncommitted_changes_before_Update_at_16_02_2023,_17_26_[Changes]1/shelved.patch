@@ -1,0 +1,127 @@
+Index: src/academy/mindswap/game/messages/Messages.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package academy.mindswap.game.messages;\n\npublic abstract class Messages {\n    public static final String GAME_STARTED = \"MASTERMIND\\n\";\n    public static final String WELCOME = \"Welcome to Mastermind %s!\";\n    public static final String NO_SUCH_COMMAND = \"⚠️ Invalid command!\";\n    public static final String COMMANDS_LIST = \"\"\"\n            List of available commands:\n            /list -> gets you the list of connected clients\n            /shout <message> -> lets you shout a message to all connected clients\n            /whisper <username> <message> -> lets you whisper a message to a single connected player\n            /name <new name> -> lets you change your name\n            /quit -> exits the game\"\"\";\n    public static final String PLAYER_ERROR = \"Something went wrong with this player's connection. Error: \";\n\n    public static final String INVALID_TRY = \"Please insert a valid 4 digits number.\";\n    public static final String INSERT_TRY = \"Please insert a 4 digit code.\";\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/academy/mindswap/game/messages/Messages.java b/src/academy/mindswap/game/messages/Messages.java
+--- a/src/academy/mindswap/game/messages/Messages.java	
++++ b/src/academy/mindswap/game/messages/Messages.java	
+@@ -15,4 +15,21 @@
+ 
+     public static final String INVALID_TRY = "Please insert a valid 4 digits number.";
+     public static final String INSERT_TRY = "Please insert a 4 digit code.";
++
++    public static final String CYAN = "";
++
++    public static final String BLUE = "";
++
++    public static final String GREEN = "";
++
++    public static final String YELLOW = "";
++
++    public static final String ORANGE = "";
++
++    public static final String PURPLE = "0xE2 0xAC 0xA4";
++
++
++
++
++
+ }
+\ No newline at end of file
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project version=\"4\">\n  <component name=\"AutoImportSettings\">\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\n  </component>\n  <component name=\"ChangeListManager\">\n    <list default=\"true\" id=\"b10b70de-bad9-4c01-a475-4a6e6a65c94a\" name=\"Changes\" comment=\"Working game!&#10;Needs to improve comparing algorithm...\">\n      <change beforePath=\"$PROJECT_DIR$/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/MasterMind.iml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/MasterMind.iml\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/src/academy/mindswap/game/Game.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/academy/mindswap/game/Game.java\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/src/academy/mindswap/game/commands/GameRules.txt\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/resources/GameRules.txt\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/src/academy/mindswap/game/messages/Messages.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/academy/mindswap/game/messages/Messages.java\" afterDir=\"false\" />\n    </list>\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\n  </component>\n  <component name=\"Git.Settings\">\n    <option name=\"RECENT_BRANCH_BY_REPOSITORY\">\n      <map>\n        <entry key=\"$PROJECT_DIR$\" value=\"main\" />\n      </map>\n    </option>\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\n  </component>\n  <component name=\"MarkdownSettingsMigration\">\n    <option name=\"stateVersion\" value=\"1\" />\n  </component>\n  <component name=\"ProjectId\" id=\"2LjqGL2HZyfupAbklzWsPOHvqee\" />\n  <component name=\"ProjectLevelVcsManager\" settingsEditedManually=\"true\" />\n  <component name=\"ProjectViewState\">\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\n    <option name=\"showLibraryContents\" value=\"true\" />\n  </component>\n  <component name=\"PropertiesComponent\">{\n  &quot;keyToString&quot;: {\n    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,\n    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;\n  }\n}</component>\n  <component name=\"RecentsManager\">\n    <key name=\"MoveFile.RECENT_KEYS\">\n      <recent name=\"$PROJECT_DIR$/resources2\" />\n      <recent name=\"$PROJECT_DIR$/src/academy/mindswap/game/resources\" />\n      <recent name=\"$PROJECT_DIR$/src/academy/mindswap/game/commands\" />\n    </key>\n  </component>\n  <component name=\"RunManager\" selected=\"Application.GameLauncher\">\n    <configuration name=\"GameLauncher\" type=\"Application\" factoryName=\"Application\" temporary=\"true\" nameIsGenerated=\"true\">\n      <option name=\"MAIN_CLASS_NAME\" value=\"academy.mindswap.game.GameLauncher\" />\n      <module name=\"MasterMind\" />\n      <extension name=\"coverage\">\n        <pattern>\n          <option name=\"PATTERN\" value=\"academy.mindswap.game.*\" />\n          <option name=\"ENABLED\" value=\"true\" />\n        </pattern>\n      </extension>\n      <method v=\"2\">\n        <option name=\"Make\" enabled=\"true\" />\n      </method>\n    </configuration>\n    <configuration name=\"Player\" type=\"Application\" factoryName=\"Application\" singleton=\"false\" temporary=\"true\" nameIsGenerated=\"true\">\n      <option name=\"MAIN_CLASS_NAME\" value=\"academy.mindswap.player.Player\" />\n      <module name=\"MasterMind\" />\n      <extension name=\"coverage\">\n        <pattern>\n          <option name=\"PATTERN\" value=\"academy.mindswap.player.*\" />\n          <option name=\"ENABLED\" value=\"true\" />\n        </pattern>\n      </extension>\n      <method v=\"2\">\n        <option name=\"Make\" enabled=\"true\" />\n      </method>\n    </configuration>\n    <list>\n      <item itemvalue=\"Application.GameLauncher\" />\n      <item itemvalue=\"Application.Player\" />\n    </list>\n    <recent_temporary>\n      <list>\n        <item itemvalue=\"Application.Player\" />\n        <item itemvalue=\"Application.GameLauncher\" />\n        <item itemvalue=\"Application.Player\" />\n        <item itemvalue=\"Application.GameLauncher\" />\n        <item itemvalue=\"Application.Player\" />\n      </list>\n    </recent_temporary>\n  </component>\n  <component name=\"SpellCheckerSettings\" RuntimeDictionaries=\"0\" Folders=\"0\" CustomDictionaries=\"0\" DefaultDictionary=\"application-level\" UseSingleDictionary=\"true\" transferred=\"true\" />\n  <component name=\"TaskManager\">\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\n      <changelist id=\"b10b70de-bad9-4c01-a475-4a6e6a65c94a\" name=\"Changes\" comment=\"\" />\n      <created>1676394744034</created>\n      <option name=\"number\" value=\"Default\" />\n      <option name=\"presentableId\" value=\"Default\" />\n      <updated>1676394744034</updated>\n    </task>\n    <task id=\"LOCAL-00001\" summary=\"Compare List ready\">\n      <created>1676464216642</created>\n      <option name=\"number\" value=\"00001\" />\n      <option name=\"presentableId\" value=\"LOCAL-00001\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1676464216642</updated>\n    </task>\n    <task id=\"LOCAL-00002\" summary=\"Working game!&#10;Needs to improve comparing algorithm...\">\n      <created>1676475046114</created>\n      <option name=\"number\" value=\"00002\" />\n      <option name=\"presentableId\" value=\"LOCAL-00002\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1676475046114</updated>\n    </task>\n    <option name=\"localTasksCounter\" value=\"3\" />\n    <servers />\n  </component>\n  <component name=\"Vcs.Log.Tabs.Properties\">\n    <option name=\"TAB_STATES\">\n      <map>\n        <entry key=\"MAIN\">\n          <value>\n            <State>\n              <option name=\"FILTERS\">\n                <map>\n                  <entry key=\"branch\">\n                    <value>\n                      <list>\n                        <option value=\"Result_algorithm\" />\n                      </list>\n                    </value>\n                  </entry>\n                </map>\n              </option>\n            </State>\n          </value>\n        </entry>\n      </map>\n    </option>\n  </component>\n  <component name=\"VcsManagerConfiguration\">\n    <MESSAGE value=\"Compare List ready\" />\n    <MESSAGE value=\"Working game!&#10;Needs to improve comparing algorithm...\" />\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"Working game!&#10;Needs to improve comparing algorithm...\" />\n  </component>\n  <component name=\"XDebuggerManager\">\n    <watches-manager>\n      <configuration name=\"Application\">\n        <watch expression=\"secretCode\" />\n      </configuration>\n    </watches-manager>\n  </component>\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	
++++ b/.idea/workspace.xml	
+@@ -4,22 +4,30 @@
+     <option name="autoReloadType" value="SELECTIVE" />
+   </component>
+   <component name="ChangeListManager">
+-    <list default="true" id="b10b70de-bad9-4c01-a475-4a6e6a65c94a" name="Changes" comment="Working game!&#10;Needs to improve comparing algorithm...">
++    <list default="true" id="b10b70de-bad9-4c01-a475-4a6e6a65c94a" name="Changes" comment="">
++      <change afterPath="$PROJECT_DIR$/src/academy/mindswap/game/messages/COLOR.java" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/MasterMind.iml" beforeDir="false" afterPath="$PROJECT_DIR$/MasterMind.iml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/Game.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/Game.class" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/academy/mindswap/game/Game.java" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/commands/GameRules.txt" beforeDir="false" afterPath="$PROJECT_DIR$/resources/GameRules.txt" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/GameLauncher.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/academy/mindswap/game/GameLauncher.java" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/messages/Messages.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/academy/mindswap/game/messages/Messages.java" afterDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+     <option name="LAST_RESOLUTION" value="IGNORE" />
++  </component>
++  <component name="FileTemplateManagerImpl">
++    <option name="RECENT_TEMPLATES">
++      <list>
++        <option value="Enum" />
++      </list>
++    </option>
+   </component>
+   <component name="Git.Settings">
+     <option name="RECENT_BRANCH_BY_REPOSITORY">
+       <map>
+-        <entry key="$PROJECT_DIR$" value="main" />
++        <entry key="$PROJECT_DIR$" value="working_the_nullsISSUE" />
+       </map>
+     </option>
+     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+@@ -110,7 +118,14 @@
+       <option name="project" value="LOCAL" />
+       <updated>1676475046114</updated>
+     </task>
+-    <option name="localTasksCounter" value="3" />
++    <task id="LOCAL-00003" summary="game resolved issues about waiting for new player and compare guess with secretcode">
++      <created>1676546898609</created>
++      <option name="number" value="00003" />
++      <option name="presentableId" value="LOCAL-00003" />
++      <option name="project" value="LOCAL" />
++      <updated>1676546898609</updated>
++    </task>
++    <option name="localTasksCounter" value="4" />
+     <servers />
+   </component>
+   <component name="Vcs.Log.Tabs.Properties">
+@@ -139,7 +154,8 @@
+   <component name="VcsManagerConfiguration">
+     <MESSAGE value="Compare List ready" />
+     <MESSAGE value="Working game!&#10;Needs to improve comparing algorithm..." />
+-    <option name="LAST_COMMIT_MESSAGE" value="Working game!&#10;Needs to improve comparing algorithm..." />
++    <MESSAGE value="game resolved issues about waiting for new player and compare guess with secretcode" />
++    <option name="LAST_COMMIT_MESSAGE" value="game resolved issues about waiting for new player and compare guess with secretcode" />
+   </component>
+   <component name="XDebuggerManager">
+     <watches-manager>
+Index: src/academy/mindswap/game/messages/COLOR.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/academy/mindswap/game/messages/COLOR.java b/src/academy/mindswap/game/messages/COLOR.java
+new file mode 100644
+--- /dev/null	
++++ b/src/academy/mindswap/game/messages/COLOR.java	
+@@ -0,0 +1,13 @@
++package academy.mindswap.game.messages;
++
++public enum COLOR {
++    BLUE("\\u001B[34m⬤\\u001B[0m"),
++    RED("\\u001B[31m⬤\\u001B[0m"),
++    CYAN("\\u001B[36m⬤\\u001B[0m"),
++    ORANGE("\\u001B[m⬤\\u001B[0m"),
++    YELLOW("\\u001B[33m⬤\\u001B[0m"),
++    GREEN("\\u001B[32m⬤\\u001B[0m"),
++    PINK("\\u001B[m⬤\\u001B[0m");
++
++
++}

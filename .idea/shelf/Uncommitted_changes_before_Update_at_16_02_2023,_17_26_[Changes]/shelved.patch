@@ -1,0 +1,149 @@
+Index: src/academy/mindswap/game/GameLauncher.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package academy.mindswap.game;\n\nimport java.io.IOException;\n\npublic class GameLauncher {\n\n    public static void main(String[] args) {\n        Game game = new Game(2);\n\n        try {\n            game.start(8082);\n        } catch (IOException e) {\n            e.printStackTrace();\n        }\n    }\n}
+===================================================================
+diff --git a/src/academy/mindswap/game/GameLauncher.java b/src/academy/mindswap/game/GameLauncher.java
+--- a/src/academy/mindswap/game/GameLauncher.java	
++++ b/src/academy/mindswap/game/GameLauncher.java	
+@@ -13,4 +13,5 @@
+             e.printStackTrace();
+         }
+     }
+-}
+\ No newline at end of file
++}
++
+Index: src/academy/mindswap/game/Game.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package academy.mindswap.game;\n\nimport academy.mindswap.game.commands.Command;\nimport academy.mindswap.game.messages.Messages;\n\nimport java.io.*;\nimport java.net.*;\nimport java.util.*;\nimport java.util.concurrent.*;\nimport java.util.regex.Matcher;\nimport java.util.regex.Pattern;\n\nimport static java.lang.Integer.parseInt;\n\npublic class Game {\n    private ServerSocket serverSocket;\n    private ExecutorService service;\n    int numOfPlayers;\n    private final List<PlayerConnectionHandler> playersList;\n    List<Integer> secretCode;\n    boolean win = false;\n    private final HashMap<String, Socket> userSocketMap;\n    List<String> turnResult;\n\n\n    public Game(int numOfPlayers) {\n        playersList = new CopyOnWriteArrayList<>();\n        userSocketMap = new HashMap<>();\n        this.numOfPlayers = numOfPlayers;\n    }\n\n    public void start(int port) throws IOException {\n        serverSocket = new ServerSocket(port);\n        service = Executors.newFixedThreadPool(numOfPlayers);\n        System.out.printf(Messages.GAME_STARTED);\n\n        while (true) {\n            acceptConnection();\n        }\n    }\n\n    public void acceptConnection() throws IOException {\n        Socket playerSocket = serverSocket.accept();\n        PlayerConnectionHandler playerConnectionHandler =\n                new PlayerConnectionHandler(playerSocket);\n        service.submit(playerConnectionHandler);\n    }\n\n\n    public void broadcast(String name, String message) {\n        playersList.stream()\n                .filter(handler -> !handler.getName().equals(name))\n                .forEach(handler -> handler.send(name + \": \" + message));\n    }\n\n    public void removePlayer(PlayerConnectionHandler playerConnectionHandler) {\n        playersList.remove(playerConnectionHandler);\n    }\n\n    public void broadcastBoard(PlayerConnectionHandler player) {\n        updateBoard(player);\n        System.out.println(player.board.size());\n        for (int i = 0; i < player.board.size(); i++) {\n            System.out.println(i);\n            player.send(player.board.get(i));\n        }\n    }\n    public void updateBoard(PlayerConnectionHandler player) {\n        String newTry = \"_______________________ \\n\" +\n                \"|  \" +  player.playerGuess.get(0).toString() +\n                \"  |  \" + player.playerGuess.get(1).toString() +\n                \"  |  \" + player.playerGuess.get(2).toString() +\n                \"  |  \" + player.playerGuess.get(3).toString() + \"  |  \" + \" [==] \"\n                + turnResult.get(0) +\n                turnResult.get(1) + \" \" +\n                \" \" + turnResult.get(2) +\n                turnResult.get(3) + \"\\n_______________________    ____\";\n        System.out.println(newTry);\n        player.board.add(newTry);\n    }\n\n    private void generateCode() {\n        Random random = new Random();\n        secretCode = new ArrayList<>();\n        for (int i = 0; i < 4; i++) {\n            int digit = random.nextInt(5);\n            secretCode.add(digit);\n        }\n    }\n\n    private void compareCodes(List<Integer> playerGuess, List<Integer> secretCode) {\n        turnResult = new ArrayList<>();\n        List<Integer> playerGuessCopy = new ArrayList<>(playerGuess);\n        List<Integer> secretCodeCopy = new ArrayList<>(secretCode);\n        for (int i = 0; i < playerGuess.size(); i++) {\n            if (playerGuessCopy.get(i).equals(secretCodeCopy.get(i)) && playerGuessCopy.get(i) != null ) {\n                turnResult.add(\"+\");\n                playerGuessCopy.set(i,null);\n                secretCodeCopy.set(i,null);\n            }\n        }\n\n        for (int i = 0; i < playerGuess.size(); i++) {\n            if (secretCodeCopy.contains(playerGuessCopy.get(i)) && playerGuessCopy.get(i) != null) {\n                turnResult.add(\"-\");\n                playerGuessCopy.set(i,null);\n                secretCodeCopy.set(i,null);\n            }\n        }\n\n\n        playerGuessCopy.clear();\n        secretCodeCopy.clear();\n    }\n\n    private void checkWinner(List<Integer> playerGuess) {\n        if (secretCode.equals(playerGuess)) {\n            win = true;\n        }\n    }\n\n    public class PlayerConnectionHandler implements Runnable {\n\n        private String name;\n        private final Socket playerSocket;\n        private final BufferedWriter out;\n        private String message;\n        List<Integer> playerGuess;\n        private int turns;\n        private ArrayList<String> board;\n\n        public PlayerConnectionHandler(Socket playerSocket) throws IOException {\n            this.playerSocket = playerSocket;\n            this.out = new BufferedWriter(new OutputStreamWriter(playerSocket.getOutputStream()));\n            this.board = new ArrayList<>();\n        }\n\n        @Override\n        public void run() {\n            try {\n                addPlayer(this);\n                generateCode();\n                    while (!win) {\n                    send(Messages.INSERT_TRY);\n                    System.out.println(secretCode);\n                    communicate();\n                    checkWinner(playerGuess);\n                    compareCodes(playerGuess, secretCode);\n                    send(turnResult.toString());\n                    broadcastBoard(this);\n                    }\n                removePlayer(this);\n            } catch (IOException e) {\n                throw new RuntimeException(e);\n            }\n        }\n\n        private void addPlayer(PlayerConnectionHandler playerConnectionHandler) throws IOException {\n            playersList.add(playerConnectionHandler);\n            send(\"Please insert your username!\");\n            BufferedReader inputName = new BufferedReader(new InputStreamReader(playerSocket.getInputStream()));\n            this.name = inputName.readLine();\n            playerConnectionHandler.send(Messages.WELCOME.formatted(playerConnectionHandler.getName()));\n            playerConnectionHandler.send(waitForNewPlayer());\n            playerConnectionHandler.send(readInstruction());\n            userSocketMap.put(playerConnectionHandler.getName(),playerConnectionHandler.playerSocket);\n\n\n        }\n\n        private String readInstruction() {\n            try {\n                File file = new File(\"resources/GameRules.txt\");\n                Scanner scanner = new Scanner(file);\n\n                StringBuilder stringBuilder = new StringBuilder();\n                while (scanner.hasNextLine()) {\n                    stringBuilder.append(scanner.nextLine());\n                    stringBuilder.append(\"\\n\");\n                }\n                scanner.close();\n                return stringBuilder.toString();\n            } catch (FileNotFoundException e) {\n                System.out.println(\"File not found \" + e.getMessage());\n            }\n            return null;\n        }\n        private String waitForNewPlayer() {\n\n            while(playersList.size() < numOfPlayers){\n                System.out.println(\"Waiting for \" + (numOfPlayers - playersList.size()) + \" more player(s) to join...\");\n                try {\n                  Thread.sleep(1000);\n                } catch (InterruptedException e) {\n                    e.printStackTrace();\n                }\n            }\n\n            return \"All players have joined. Starting the game...\";\n        }\n\n        private void communicate() throws IOException {\n            try {\n                Scanner in = new Scanner(playerSocket.getInputStream());\n                message = in.nextLine();\n                if (isCommand(message)) {\n                    dealWithCommand(message);\n                }\n                validatePlay();\n                checkPlayerGuess();\n            } catch (IOException e) {\n                System.err.println(Messages.PLAYER_ERROR + e.getMessage());\n            }\n        }\n\n        private void checkPlayerGuess() {\n            playerGuess = new ArrayList<>(message.length());\n            for (int i = 0; i < message.length(); i++) {\n                playerGuess.add(parseInt(String.valueOf(message.charAt(i))));\n            }\n        }\n\n        private void validatePlay() throws IOException {\n            String regex = \"^\\\\d{4}$\";\n            final Pattern pattern = Pattern.compile(regex);\n            final Matcher matcher = pattern.matcher(message);\n            if (!matcher.find()) {\n                send(Messages.INVALID_TRY);\n                communicate();\n            }\n        }\n\n        private boolean isCommand(String message) {\n            return message.startsWith(\"/\");\n        }\n\n        private void dealWithCommand(String message) throws IOException {\n            String description = message.split(\" \")[0];\n            Command command = Command.getCommandFromDescription(description);\n            if (command == null) {\n                out.write(Messages.NO_SUCH_COMMAND);\n                out.newLine();\n                out.flush();\n                return;\n            }\n            command.getHandler().execute(Game.this, this);\n        }\n\n        public void send(String message) {\n            try {\n                out.write(message);\n                out.newLine();\n                out.flush();\n            } catch (IOException e) {\n                removePlayer(this);\n                e.printStackTrace();\n            }\n        }\n\n        public void close() {\n            try {\n                playerSocket.close();\n            } catch (IOException e) {\n                e.printStackTrace();\n            }\n        }\n\n        public String getName() {\n            return name;\n        }\n\n    }\n}
+===================================================================
+diff --git a/src/academy/mindswap/game/Game.java b/src/academy/mindswap/game/Game.java
+--- a/src/academy/mindswap/game/Game.java	
++++ b/src/academy/mindswap/game/Game.java	
+@@ -17,7 +17,6 @@
+     private ExecutorService service;
+     int numOfPlayers;
+     private final List<PlayerConnectionHandler> playersList;
+-    List<Integer> secretCode;
+     boolean win = false;
+     private final HashMap<String, Socket> userSocketMap;
+     List<String> turnResult;
+@@ -59,13 +58,12 @@
+ 
+     public void broadcastBoard(PlayerConnectionHandler player) {
+         updateBoard(player);
+-        System.out.println(player.board.size());
+         for (int i = 0; i < player.board.size(); i++) {
+-            System.out.println(i);
+             player.send(player.board.get(i));
+         }
+     }
+     public void updateBoard(PlayerConnectionHandler player) {
++
+         String newTry = "_______________________ \n" +
+                 "|  " +  player.playerGuess.get(0).toString() +
+                 "  |  " + player.playerGuess.get(1).toString() +
+@@ -74,17 +72,17 @@
+                 + turnResult.get(0) +
+                 turnResult.get(1) + " " +
+                 " " + turnResult.get(2) +
+-                turnResult.get(3) + "\n_______________________    ____";
++                turnResult.get(3) + "\n_______________________     ____";
+         System.out.println(newTry);
+         player.board.add(newTry);
+     }
+ 
+-    private void generateCode() {
++    private void generateCode(PlayerConnectionHandler player) {
+         Random random = new Random();
+-        secretCode = new ArrayList<>();
++        player.secretCode = new ArrayList<>();
+         for (int i = 0; i < 4; i++) {
+             int digit = random.nextInt(5);
+-            secretCode.add(digit);
++            player.secretCode.add(digit);
+         }
+     }
+ 
+@@ -99,7 +97,6 @@
+                 secretCodeCopy.set(i,null);
+             }
+         }
+-
+         for (int i = 0; i < playerGuess.size(); i++) {
+             if (secretCodeCopy.contains(playerGuessCopy.get(i)) && playerGuessCopy.get(i) != null) {
+                 turnResult.add("-");
+@@ -107,14 +104,15 @@
+                 secretCodeCopy.set(i,null);
+             }
+         }
+-
+-
++        while(turnResult.size() != 4) {
++            turnResult.add(" ");
++        }
+         playerGuessCopy.clear();
+         secretCodeCopy.clear();
+     }
+ 
+-    private void checkWinner(List<Integer> playerGuess) {
+-        if (secretCode.equals(playerGuess)) {
++    private void checkWinner(PlayerConnectionHandler player) {
++        if (player.secretCode.equals(player.playerGuess)) {
+             win = true;
+         }
+     }
+@@ -129,6 +127,8 @@
+         private int turns;
+         private ArrayList<String> board;
+ 
++        private List<Integer> secretCode;
++
+         public PlayerConnectionHandler(Socket playerSocket) throws IOException {
+             this.playerSocket = playerSocket;
+             this.out = new BufferedWriter(new OutputStreamWriter(playerSocket.getOutputStream()));
+@@ -139,14 +139,13 @@
+         public void run() {
+             try {
+                 addPlayer(this);
+-                generateCode();
++                generateCode(this);
++                System.out.println(secretCode + " --> " + this.name);
+                     while (!win) {
+                     send(Messages.INSERT_TRY);
+-                    System.out.println(secretCode);
+                     communicate();
+-                    checkWinner(playerGuess);
++                    checkWinner(this);
+                     compareCodes(playerGuess, secretCode);
+-                    send(turnResult.toString());
+                     broadcastBoard(this);
+                     }
+                 removePlayer(this);
+@@ -155,6 +154,7 @@
+             }
+         }
+ 
++
+         private void addPlayer(PlayerConnectionHandler playerConnectionHandler) throws IOException {
+             playersList.add(playerConnectionHandler);
+             send("Please insert your username!");
+@@ -164,8 +164,6 @@
+             playerConnectionHandler.send(waitForNewPlayer());
+             playerConnectionHandler.send(readInstruction());
+             userSocketMap.put(playerConnectionHandler.getName(),playerConnectionHandler.playerSocket);
+-
+-
+         }
+ 
+         private String readInstruction() {
+@@ -195,7 +193,6 @@
+                     e.printStackTrace();
+                 }
+             }
+-
+             return "All players have joined. Starting the game...";
+         }
+ 
