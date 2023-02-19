@@ -2,36 +2,29 @@ package academy.mindswap.game;
 
 import academy.mindswap.game.messages.Messages;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
-import static java.lang.Integer.parseInt;
+public abstract class Game {
 
-public class Game {
-
-    Code code;
     Server.ConnectedPlayer player;
 
-    List<String> playerGuess;
+    int maxAttempts = 10;
 
     int attempts;
 
     Board board;
+
+    List<String> playerGuess;
 
     List<String> secretCode;
 
     List<String> turnResult;
 
     String attempt;
-
-    private String gameMode;
-    ArrayList<String> opCode;
-
-
-//    HashMap<String,Integer> attemptMap;
 
     boolean rightGuess = false;
 
@@ -41,36 +34,38 @@ public class Game {
         this.secretCode = Code.generateCode();
     }
 
-
-
     public void play() throws IOException {
         System.out.println(secretCode + " " + this.player.getName());
         while (!rightGuess) {
-            try {
-                player.send(Messages.INSERT_TRY);
-                attempt = player.askForGuess();
-                checkPlayerGuess();
-                turnResult = Code.compareCodes(this.playerGuess,this.secretCode);
-                sendBoard();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            player.send(Messages.INSERT_TRY);
+            attempt = player.askForGuess();
+            checkPlayerGuess();
+            turnResult = Code.compareCodes(this.playerGuess, this.secretCode);
+            sendBoard();
+            if (playerGuess.equals(secretCode)) {
+                rightGuess = true;
+            }
+            if (attempts == maxAttempts) {
+                player.send(Messages.OUT_OF_TRIES);
+                break;
             }
         }
-        player.send(Messages.RIGHT_GUESS.formatted(attempts));
-        player.send(Messages.QUIT_OR_NEW_GAME);
+        if (rightGuess) {
+            player.send(Messages.RIGHT_GUESS.formatted(attempts));
+        }
     }
 
-    private void checkPlayerGuess() {
+    void checkPlayerGuess() {
         playerGuess = new ArrayList<>();
         this.attempts++;
         for (int i = 0; i < attempt.length(); i++) {
-           playerGuess.add(String.valueOf(attempt.charAt(i)));
+            playerGuess.add(String.valueOf(attempt.charAt(i)));
         }
     }
 
     public void sendBoard() {
-            player.send(Messages.LEGEND) ;
-        for (String s : board.updatedBoard(this.playerGuess,this.turnResult))
+        player.send(Messages.LEGEND);
+        for (String s : board.updatedBoard(this.playerGuess, this.turnResult))
             player.send(s);
     }
 
@@ -82,5 +77,10 @@ public class Game {
         return attempts;
     }
 
-
+    public void setSecretCode(String secretCode) {
+        this.secretCode = new ArrayList<>();
+        for (int i = 0; i < this.secretCode.size(); i++) {
+            this.secretCode.add(String.valueOf(secretCode.charAt(i)));
+        }
+    }
 }

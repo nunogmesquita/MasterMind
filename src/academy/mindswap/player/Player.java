@@ -1,6 +1,5 @@
 package academy.mindswap.player;
 
-import academy.mindswap.game.Server;
 import academy.mindswap.game.messages.Messages;
 
 import java.io.*;
@@ -31,7 +30,9 @@ public class Player {
 
     private static class KeyboardHandler implements Runnable {
         private final BufferedWriter out;
+
         private final Socket socket;
+
         private final BufferedReader in;
 
         public KeyboardHandler(BufferedWriter out, Socket socket) {

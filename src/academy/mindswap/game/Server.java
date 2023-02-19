@@ -13,93 +13,63 @@ import java.util.regex.Pattern;
 
 public class Server {
     private final ServerSocket serverSocket;
+
     private ExecutorService serviceSolo;
+
     private ExecutorService serviceDuo;
 
-    int numOfPlayers;
-
     protected final List<ConnectedPlayer> playersList;
-    private boolean duoGame;
-    private ConnectedPlayer playerWithLeastTurns;
-    private ConnectedPlayer playerWithMostTurns;
-    private ConnectedPlayer playerWithSameTurns;
 
+    private boolean duoGame;
+
+    private ConnectedPlayer playerWithLeastTurns;
+
+    private ConnectedPlayer playerWithMostTurns;
+
+    private ConnectedPlayer playerWithSameTurns;
 
     public Server(int port) throws IOException {
         serverSocket = new ServerSocket(port);
         playersList = new CopyOnWriteArrayList<>();
-
     }
 
     public void start() throws IOException, InterruptedException {
         serviceSolo = Executors.newCachedThreadPool();
-
         System.out.printf(Messages.GAME_STARTED);
-
-        acceptConnection();
-    }
-
-
-    public void sendCodes(ConnectedPlayer player) throws IOException {
-        if(player.equals(playersList.get(1))) {
-            playersList.get(1).send(Messages.OPPONENT_CODE);
-            String stringCode = player.askForGuess();
-            playersList.get(0).gameDuo.setSecretCode(stringCode);
-        } else {
-            playersList.get(0).send(Messages.OPPONENT_CODE);
-            String stringCode1 = player.askForGuess();
-            playersList.get(1).gameDuo.setSecretCode(stringCode1);
+        while (true) {
+            acceptConnection();
         }
     }
+
     public void acceptConnection() throws IOException, InterruptedException {
         Socket playerSocket = serverSocket.accept(); // blocking method
-        ConnectedPlayer connectedPlayer = new ConnectedPlayer(playerSocket, duoGame);
+        ConnectedPlayer connectedPlayer = new ConnectedPlayer(playerSocket);
         addPlayer(connectedPlayer);
         gameMode(connectedPlayer);
-
     }
 
-    private void gameMode(ConnectedPlayer player) throws IOException, InterruptedException {
+    private void gameMode(ConnectedPlayer player) throws IOException {
         player.send(Messages.GAME_MODE);
         String gameMode = new BufferedReader(new InputStreamReader(player.getPlayerSocket().getInputStream())).readLine();
         switch (gameMode) {
-            case "1":
-                serviceSolo.submit(player);
-                break;
-            case "2":
+            case "1" -> serviceSolo.submit(player);
+            case "2" -> {
                 playersList.add(player);
-                duoGame = true;
+                player.duoGame = true;
                 startDuoGame(player);
-                break;
-            default:
-                gameMode(player);
+            }
+            default -> gameMode(player);
         }
     }
 
-
-//if(p2pList.size() == 2)
-//
-//    {
-//        ArrayList<String> code;
-//        if (playersList.get(0).getName().equalsIgnoreCase(player.getName())) {
-//            code = playerCodes.get(2);
-//        } else {
-//            code = playerCodes.get(1);
-//        }
-
-    public synchronized void startDuoGame(ConnectedPlayer connectedplayer) throws InterruptedException, IOException {
+    public synchronized void startDuoGame(ConnectedPlayer connectedplayer) {
+        serviceDuo = Executors.newFixedThreadPool(2);
         if (playersList.size() % 2 == 0) {
-            serviceDuo = Executors.newFixedThreadPool(2);
-            playersList.notifyAll();
             serviceDuo.submit(connectedplayer);
-
         } else {
-            connectedplayer.send(Messages.WAITING_ALL_PLAYERS);
-            connectedplayer.wait();
             serviceDuo.submit(connectedplayer);
         }
     }
-
 
     private synchronized void addPlayer(ConnectedPlayer connectedPlayer) throws IOException, InterruptedException {
         verifyPlayerName(connectedPlayer);
@@ -150,14 +120,12 @@ public class Server {
         if (playerWithMostTurns == null || connectedPlayer.game.getAttempts() > playerWithMostTurns.game.getAttempts()) {
             playerWithMostTurns = connectedPlayer;
         }
-
         if (playerWithLeastTurns == null || connectedPlayer.game.getAttempts() < playerWithLeastTurns.game.getAttempts()) {
             playerWithLeastTurns = connectedPlayer;
         }
         if (playerWithSameTurns == null || connectedPlayer.game.getAttempts() == playerWithSameTurns.game.getAttempts()) {
             connectedPlayer.send(playerWithSameTurns.getName().concat("It's a tie"));
         }
-
         connectedPlayer.send(playerWithLeastTurns.getName().concat(" Win with least attempts!"));
     }
 
@@ -170,39 +138,68 @@ public class Server {
         private final BufferedWriter out;
 
         private String message;
-        private boolean duoGame;
-        Game game;
-        GameDuo gameDuo;
 
-        public ConnectedPlayer(Socket playerSocket,boolean duoGame) throws IOException {
+        boolean duoGame;
+
+        Game game;
+
+        public ConnectedPlayer(Socket playerSocket) throws IOException {
             this.playerSocket = playerSocket;
             this.out = new BufferedWriter(new OutputStreamWriter(playerSocket.getOutputStream()));
-            this.duoGame = duoGame;
         }
 
         @Override
         public void run() {
             try {
+                if (duoGame) {
+                    if (playersList.size() < 2) {
+                        send(Messages.WAITING_ALL_PLAYERS);
+                        this.wait();
+                    } else this.notifyAll();
+                }
                 send(Instructions.readInstruction());
                 startGame();
-//                sendCodes(this);
-                gameDuo.play();
                 game.play();
                 checkWinnerAttempts(this.game, this);
             } catch (IOException | InterruptedException e) {
                 throw new RuntimeException(e);
+            } finally {
+                restart();
+                close();
             }
         }
 
-        public void startGame() {
-            if(this.duoGame == true) {
-                gameDuo = new GameDuo(this);
+        private void restart() {
+            send(Messages.QUIT_OR_NEW_GAME);
+            try {
+                Scanner in = new Scanner(playerSocket.getInputStream());
+                message = in.nextLine();
+                dealWithCommand(message);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        public void startGame() throws IOException {
+            if (this.duoGame) {
+                game = new GameDuo(this);
+                sendCodes(this);
+            } else game = new SoloGame(this);
+        }
+
+        public void sendCodes(ConnectedPlayer player) {
+            if (player.equals(playersList.get(1))) {
+                playersList.get(1).send(Messages.OPPONENT_CODE);
+                String stringCode = player.askForGuess();
+                playersList.get(0).game.setSecretCode(stringCode);
             } else {
-                game = new Game(this);
+                playersList.get(0).send(Messages.OPPONENT_CODE);
+                String stringCode1 = player.askForGuess();
+                playersList.get(1).game.setSecretCode(stringCode1);
             }
         }
 
-        String askForGuess() throws IOException {
+        String askForGuess() {
             while (!playerSocket.isClosed()) {
                 try {
                     Scanner in = new Scanner(playerSocket.getInputStream());
@@ -222,16 +219,9 @@ public class Server {
             return null;
         }
 
-        public void showCode(ConnectedPlayer connectedPlayer) {
-            connectedPlayer.send(Messages.SHOW_CODE.formatted(game.getSecretCode()));
-        }
 
         public void startNewGame() {
-            try {
-                game.play();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            this.run();
         }
 
         private boolean validInput() {
@@ -262,7 +252,6 @@ public class Server {
             command.getHandler().execute(Server.this, this);
         }
 
-
         public void send(String message) {
             try {
                 out.write(message);
@@ -273,7 +262,6 @@ public class Server {
                 e.printStackTrace();
             }
         }
-
 
         public void close() {
             try {
@@ -287,8 +275,6 @@ public class Server {
         public String getName() {
             return name;
         }
-
-
 
         public Socket getPlayerSocket() {
             return playerSocket;

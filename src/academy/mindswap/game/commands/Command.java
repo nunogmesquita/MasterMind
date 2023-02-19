@@ -1,10 +1,10 @@
 package academy.mindswap.game.commands;
 
-
 public enum Command {
+    COLORS("/colors", new ColorsHandler()),
     HELP("/help", new HelpHandler()),
     SHOW_CODE("/show", new ShowHandler()),
-    START_NEW_GAME("/star", new StartNewGameHandler()),
+    START_NEW_GAME("/start", new StartNewGameHandler()),
     QUIT("/quit", new QuitHandler());
 
     private final String description;

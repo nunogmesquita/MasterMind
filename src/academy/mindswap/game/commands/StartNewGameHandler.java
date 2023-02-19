@@ -8,4 +8,3 @@ public class StartNewGameHandler implements CommandHandler {
             connectedPlayer.startNewGame();
     }
 }
-
