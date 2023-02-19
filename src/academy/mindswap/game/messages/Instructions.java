@@ -9,6 +9,7 @@ import java.util.Scanner;
 public class Instructions {
 
     public static String readInstruction() {
+
         try {
 
             for (Color color: Color.values()) {
@@ -26,8 +27,9 @@ public class Instructions {
             scanner.close();
             return stringBuilder.toString();
         } catch (FileNotFoundException e) {
-            System.out.println("File not found " + e.getMessage());
+            System.out.println(Messages.INVALID_FILE + e.getMessage());
         }
         return null;
     }
+
 }

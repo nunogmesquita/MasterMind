@@ -3,7 +3,7 @@ package academy.mindswap.game.messages;
 
 
 public enum Color {
-     White("\u001B[37m☗\u001B[0m","Correct Color Wrong Possition"),
+     White("\u001B[37m☗\u001B[0m","Correct Color Wrong Position"),
      RED("\u001B[31m☗\u001B[0m","Correct Color and Position"),
      BLACK("\u001B[30m☗\u001B[0m","Wrong Color"),
      PURPLE("\u001B[35m⬤\u001B[0m","P"),
@@ -27,4 +27,7 @@ public enum Color {
      public String toString() {
           return letter + " -->  ".concat(c);
      }
-}
+
+
+     }
+
