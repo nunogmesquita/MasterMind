@@ -16,7 +16,7 @@ public class Board {
         this.board = new ArrayList<>();
     }
 
-    public void printBoard(Game game) {
+    public void printBoard(Game game,GameDuo gameDuo) {
         transformGuessResult(game);
         updateBoard();
 

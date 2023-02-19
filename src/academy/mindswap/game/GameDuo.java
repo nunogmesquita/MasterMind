@@ -10,21 +10,15 @@ import java.util.List;
 
 import static java.lang.Integer.parseInt;
 
-public class Game {
+public class GameDuo  {
 
     Code code;
     Server.ConnectedPlayer player;
-
     List<String> playerGuess;
-
     int attempts;
-
     Board board;
-
     List<String> secretCode;
-
     List<String> turnResult;
-
     String attempt;
 
     private String gameMode;
@@ -35,22 +29,21 @@ public class Game {
 
     boolean rightGuess = false;
 
-    public Game(Server.ConnectedPlayer connectedPlayer) {
+    public GameDuo(Server.ConnectedPlayer connectedPlayer, ArrayList<String> code) {
         this.player = connectedPlayer;
         this.board = new Board();
-        this.secretCode = Code.generateCode();
+        this.secretCode = code;
     }
-
 
 
     public void play() throws IOException {
         System.out.println(secretCode + " " + this.player.getName());
-        while (!rightGuess) {
+        while (!rightGuess()) {
             try {
                 player.send(Messages.INSERT_TRY);
                 attempt = player.askForGuess();
                 checkPlayerGuess();
-                Code.compareCodes(playerGuess, secretCode);
+                turnResult = Code.compareCodes(playerGuess, secretCode);
                 board.printBoard(this);
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -60,11 +53,18 @@ public class Game {
         player.send(Messages.QUIT_OR_NEW_GAME);
     }
 
+    private boolean rightGuess() {
+        if(secretCode.equals(playerGuess)){
+            return true;
+        }
+        return false;
+    }
+
     private void checkPlayerGuess() {
         playerGuess = new ArrayList<>();
         this.attempts++;
         for (int i = 0; i < attempt.length(); i++) {
-           playerGuess.add(String.valueOf(attempt.charAt(i)));
+            playerGuess.add(String.valueOf(attempt.charAt(i)));
         }
     }
 

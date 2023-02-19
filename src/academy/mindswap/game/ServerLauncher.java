@@ -8,7 +8,7 @@ public class ServerLauncher {
 
         try {
             Server server = new Server(8082);
-            server.start(2);
+            server.start();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {

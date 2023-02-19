@@ -4,6 +4,19 @@ import java.util.*;
 
 public class Code {
 
+    Board board;
+    private List <Server.ConnectedPlayer> p2pList;
+    public HashMap<Integer,ArrayList<String>> playerCodes;
+
+    private static List<String> compareResults;
+
+    public Code() {
+        this.p2pList = new ArrayList<>();
+
+        this.playerCodes = new HashMap<>();
+
+    }
+
     static ArrayList<String> generateCode() {
         ArrayList<String> code = new ArrayList<>();
         ArrayList<String> possibleChoices = new ArrayList<>(Arrays.asList("G","B","Y","O","P"));
@@ -13,25 +26,26 @@ public class Code {
         return code;
     }
 
-    static boolean rightGuess(Game game, List<String> playerGuess) {
-        if (game.secretCode.equals(playerGuess)) {
-            for (int i = 0; i < game.secretCode.size(); i++) {
-                game.turnResult.add("+");
+    static boolean rightGuess(List<String> playerGuess, List<String> secretCode) {
+        if (secretCode.equals(playerGuess)) {
+            for (int i = 0; i < secretCode.size(); i++) {
+                compareResults.add("+");
             }
-            game.rightGuess = true;
             return true;
         }
         return false;
     }
 
-    static void compareCodes(Game game, List<String> playerGuess, List<String> secretCode) {
-        game.turnResult = new ArrayList<>();
-        if (!rightGuess(game, playerGuess)) {
+
+
+    static List<String> compareCodes(List<String> playerGuess, List<String> secretCode) {
+        compareResults = new ArrayList<>();
+        if (!rightGuess(playerGuess,secretCode)) {
             List<String> playerGuessCopy = new ArrayList<>(playerGuess);
             List<String> secretCodeCopy = new ArrayList<>(secretCode);
             for (int i = 0; i < playerGuess.size(); i++) {
                 if (playerGuessCopy.get(i).equals(secretCodeCopy.get(i)) && playerGuessCopy.get(i) != null) {
-                    game.turnResult.add("+");
+                    compareResults.add("+");
                     playerGuessCopy.set(i, null);
                     secretCodeCopy.set(i, null);
                 }
@@ -40,14 +54,14 @@ public class Code {
             for (int i = 0; i < playerGuessCopy.stream()
                     .filter(secretCodeCopy::contains)
                     .filter(Objects::nonNull).count(); i++) {
-                     game.turnResult.add("-");
+                     compareResults.add("-");
             }
-            while (game.turnResult.size() != playerGuess.size()) {
-                game.turnResult.add(" ");
+            while (compareResults.size() != playerGuess.size()) {
+                compareResults.add(" ");
             }
             playerGuessCopy.clear();
             secretCodeCopy.clear();
         }
-
+            return compareResults;
     }
 }

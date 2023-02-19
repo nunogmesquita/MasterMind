@@ -23,7 +23,7 @@ public class Instructions {
                 stringBuilder.append("\n");
             }
             scanner.close();
-            return stringBuilder.toString();
+            return stringBuilder.toString().concat( Messages.RESULT_RULES + "\n" + Messages.LEGEND ) ;
         } catch (FileNotFoundException e) {
             System.out.println(Messages.INVALID_FILE + e.getMessage());
         }

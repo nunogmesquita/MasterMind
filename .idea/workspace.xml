@@ -4,8 +4,24 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b10b70de-bad9-4c01-a475-4a6e6a65c94a" name="Changes" comment="Duo players working">
-      <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/Score.java" beforeDir="false" />
+    <list default="true" id="b10b70de-bad9-4c01-a475-4a6e6a65c94a" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/academy/mindswap/game/GameDuo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/academy/mindswap/game/Score.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/Game.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/Game.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/Score.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/Server$ConnectedPlayer.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/Server$ConnectedPlayer.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/Server.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/Server.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/messages/Instructions.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/messages/Instructions.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/messages/Messages.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/game/messages/Messages.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/player/Player$KeyboardHandler.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/player/Player$KeyboardHandler.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/player/Player.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/MasterMind/academy/mindswap/player/Player.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/Board.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/academy/mindswap/game/Board.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/Code.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/academy/mindswap/game/Code.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/academy/mindswap/game/Game.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/academy/mindswap/game/Server.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/ServerLauncher.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/academy/mindswap/game/ServerLauncher.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/messages/Instructions.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/academy/mindswap/game/messages/Instructions.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -53,7 +69,7 @@
       <recent name="$PROJECT_DIR$/src/academy/mindswap/game/commands" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.Player">
+  <component name="RunManager" selected="Application.ServerLauncher">
     <configuration name="Player" type="Application" factoryName="Application" singleton="false" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="academy.mindswap.player.Player" />
       <module name="MasterMind" />
@@ -159,7 +175,14 @@
       <option name="project" value="LOCAL" />
       <updated>1676822222913</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="board print fixed and p2p players">
+      <created>1676822858966</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1676822858966</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -191,7 +214,8 @@
     <MESSAGE value="Working solo game" />
     <MESSAGE value="Duo players" />
     <MESSAGE value="Duo players working" />
-    <option name="LAST_COMMIT_MESSAGE" value="Duo players working" />
+    <MESSAGE value="board print fixed and p2p players" />
+    <option name="LAST_COMMIT_MESSAGE" value="board print fixed and p2p players" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
