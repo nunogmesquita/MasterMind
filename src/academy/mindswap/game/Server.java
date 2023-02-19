@@ -12,12 +12,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Server {
-
     private final ServerSocket serverSocket;
-
     private ExecutorService serviceSolo;
     private ExecutorService serviceDuo;
-
 
     int numOfPlayers;
 
@@ -36,21 +33,33 @@ public class Server {
 
     public void start() throws IOException, InterruptedException {
         serviceSolo = Executors.newCachedThreadPool();
-        serviceDuo = Executors.newCachedThreadPool();
+
         System.out.printf(Messages.GAME_STARTED);
 
         acceptConnection();
     }
 
+
+    public void sendCodes(ConnectedPlayer player) throws IOException {
+        if(player.equals(playersList.get(1))) {
+            playersList.get(1).send(Messages.OPPONENT_CODE);
+            String stringCode = player.askForGuess();
+            playersList.get(0).gameDuo.setSecretCode(stringCode);
+        } else {
+            playersList.get(0).send(Messages.OPPONENT_CODE);
+            String stringCode1 = player.askForGuess();
+            playersList.get(1).gameDuo.setSecretCode(stringCode1);
+        }
+    }
     public void acceptConnection() throws IOException, InterruptedException {
         Socket playerSocket = serverSocket.accept(); // blocking method
         ConnectedPlayer connectedPlayer = new ConnectedPlayer(playerSocket, duoGame);
         addPlayer(connectedPlayer);
         gameMode(connectedPlayer);
-        startDuoGame(connectedPlayer);
+
     }
 
-    private void gameMode(ConnectedPlayer player) throws IOException {
+    private void gameMode(ConnectedPlayer player) throws IOException, InterruptedException {
         player.send(Messages.GAME_MODE);
         String gameMode = new BufferedReader(new InputStreamReader(player.getPlayerSocket().getInputStream())).readLine();
         switch (gameMode) {
@@ -60,6 +69,7 @@ public class Server {
             case "2":
                 playersList.add(player);
                 duoGame = true;
+                startDuoGame(player);
                 break;
             default:
                 gameMode(player);
@@ -77,14 +87,17 @@ public class Server {
 //            code = playerCodes.get(1);
 //        }
 
-    public synchronized void startDuoGame(ConnectedPlayer connectedplayer) throws InterruptedException {
+    public synchronized void startDuoGame(ConnectedPlayer connectedplayer) throws InterruptedException, IOException {
         if (playersList.size() % 2 == 0) {
-            connectedplayer.notifyAll();
+            serviceDuo = Executors.newFixedThreadPool(2);
+            playersList.notifyAll();
             serviceDuo.submit(connectedplayer);
-        } else
-            connectedplayer.wait();
-        serviceDuo.submit(connectedplayer);
 
+        } else {
+            connectedplayer.send(Messages.WAITING_ALL_PLAYERS);
+            connectedplayer.wait();
+            serviceDuo.submit(connectedplayer);
+        }
     }
 
 
@@ -159,7 +172,7 @@ public class Server {
         private String message;
         private boolean duoGame;
         Game game;
-        private String gameMode;
+        GameDuo gameDuo;
 
         public ConnectedPlayer(Socket playerSocket,boolean duoGame) throws IOException {
             this.playerSocket = playerSocket;
@@ -170,9 +183,10 @@ public class Server {
         @Override
         public void run() {
             try {
-
                 send(Instructions.readInstruction());
-                game
+                startGame();
+//                sendCodes(this);
+                gameDuo.play();
                 game.play();
                 checkWinnerAttempts(this.game, this);
             } catch (IOException | InterruptedException e) {
@@ -180,9 +194,9 @@ public class Server {
             }
         }
 
-        public void startGame(Boolean gameType) {
-            if(gameType == true) {
-                game = new Game(this);
+        public void startGame() {
+            if(this.duoGame == true) {
+                gameDuo = new GameDuo(this);
             } else {
                 game = new Game(this);
             }
@@ -260,6 +274,7 @@ public class Server {
             }
         }
 
+
         public void close() {
             try {
                 playerSocket.close();
@@ -273,9 +288,7 @@ public class Server {
             return name;
         }
 
-        public String getGameMode() {
-            return gameMode;
-        }
+
 
         public Socket getPlayerSocket() {
             return playerSocket;

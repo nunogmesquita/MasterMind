@@ -50,8 +50,8 @@ public class Game {
                 player.send(Messages.INSERT_TRY);
                 attempt = player.askForGuess();
                 checkPlayerGuess();
-                Code.compareCodes(playerGuess, secretCode);
-                board.printBoard(this);
+                turnResult = Code.compareCodes(this.playerGuess,this.secretCode);
+                sendBoard();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -68,6 +68,12 @@ public class Game {
         }
     }
 
+    public void sendBoard() {
+            player.send(Messages.LEGEND) ;
+        for (String s : board.updatedBoard(this.playerGuess,this.turnResult))
+            player.send(s);
+    }
+
     public List<String> getSecretCode() {
         return secretCode;
     }
@@ -76,31 +82,5 @@ public class Game {
         return attempts;
     }
 
-    private void askGameMode(Server.ConnectedPlayer player ) throws IOException, InterruptedException {
-        player.send(Messages.GAME_MODE);
-        gameMode = new BufferedReader(new InputStreamReader(player.getPlayerSocket().getInputStream())).readLine();
-        if(gameMode.equals("2")) {
-            code.p2pList.add(this);
-            if(p2pList.size() == 2) {
-                this.notifyAll();
-                this.askForOpponentCode();
-            } else {
-                player.send(Messages.WAITING_ALL_PLAYERS);
-                this.wait();
-            }} // aplicar aqui um wait para que p2pList tenha 2 de size()
-    }
 
-    public void askForOpponentCode() throws IOException {
-        this.send(Messages.OPPONENT_CODE);
-        String stringCode = askForGuess();
-        ArrayList<String> opCode = new ArrayList<>();
-        for (int i = 0; i < stringCode.length(); i++) {
-            opCode.add(String.valueOf(stringCode.charAt(i)));
-        }
-        if (playerCodes.size() != 1) {
-            playerCodes.put(1, opCode);
-        } else {
-            playerCodes.put(2, opCode);
-        }
-    }
 }

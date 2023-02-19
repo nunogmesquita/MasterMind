@@ -1,7 +1,6 @@
 package academy.mindswap.game;
 
 import academy.mindswap.game.messages.Items;
-import academy.mindswap.game.messages.Messages;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,12 +15,10 @@ public class Board {
         this.board = new ArrayList<>();
     }
 
-    public void printBoard(Game game,GameDuo gameDuo) {
-        transformGuessResult(game);
+    public List<String> updatedBoard(List<String> playerGuess, List<String> turnResult) {
+        transformGuessResult(playerGuess,turnResult);
         updateBoard();
-
-        game.player.send(Messages.LEGEND) ;
-        for (String s : board) game.player.send(s);
+        return this.board;
     }
 
     public void updateBoard() {
@@ -38,10 +35,10 @@ public class Board {
                 board.add(newTry);
     }
 
-    public void transformGuessResult(Game game) {
+    public void transformGuessResult(List<String> playerGuess, List<String> turnResult) {
         guessColor = new ArrayList<>();
         resultColor = new ArrayList<>();
-        for (String letter : game.playerGuess) {
+        for (String letter : playerGuess) {
              switch (letter) {
                 case"G" -> guessColor.add(Items.GREEN.c);
                 case"B" -> guessColor.add(Items.BLUE.c);
@@ -50,7 +47,7 @@ public class Board {
                 case"P" -> guessColor.add(Items.PURPLE.c);
             }
         }
-        for (String symb : game.turnResult) {
+        for (String symb : turnResult) {
             if(symb.equals("+")) resultColor.add(Items.RED.c);
             if(symb.equals("-")) resultColor.add(Items.BLACK.c);
             if(symb.equals(" ")) resultColor.add(Items.WHITE.c);}
