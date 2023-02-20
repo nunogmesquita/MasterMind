@@ -13,9 +13,17 @@ public class Board {
 
     ArrayList<String> resultColor;
 
+
     public Board() {
         this.board = new ArrayList<>();
     }
+
+
+
+
+    /**
+     * Returns the board after transformation of symbols and updating the board.
+     */
 
     public List<String> updatedBoard(List<String> playerGuess, List<String> turnResult) {
         transformGuessResult(playerGuess, turnResult);
@@ -23,6 +31,9 @@ public class Board {
         return this.board;
     }
 
+    /**
+     *Creates a new string with the colors and adds that string to the board List.
+     */
     public void updateBoard() {
         String newTry = Items.WB.color + Items.HTBAR.color.repeat(48) + Items.R.color + "\n" +
                 Items.WB.color + Items.VBAr.color + guessColor.get(0) + Items.WB.color +
@@ -37,6 +48,11 @@ public class Board {
         board.add(newTry);
     }
 
+    /**
+     * Changes player guess  and the turnResult into colors.
+     * @param playerGuess   List of chars for the player try for in this turn
+     * @param turnResult   List of chars of symbols "+" "-" for this player turn
+     */
     public void transformGuessResult(List<String> playerGuess, List<String> turnResult) {
         guessColor = new ArrayList<>();
         resultColor = new ArrayList<>();

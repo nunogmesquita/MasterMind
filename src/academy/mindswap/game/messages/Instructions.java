@@ -6,6 +6,11 @@ import java.util.Scanner;
 
 public class Instructions {
 
+    /**
+     * returns the instructions for the player after reading them from a text file aggregated with legend
+     * for the colors and legend to show result feedback.
+     * @return
+     */
     public static String readInstruction() {
         try {
 

@@ -34,6 +34,11 @@ public class Game {
         System.out.println(secretCode);
     }
 
+
+    /**
+     * This method runs through all the different steps of the game.
+     * @throws IOException
+     */
     public void play() throws IOException {
         while (!rightGuess) {
             try {
@@ -56,6 +61,10 @@ public class Game {
         }
     }
 
+    /**
+     * transforms player try String into a List of chars
+     */
+
     private void checkPlayerGuess() {
         playerGuess = new ArrayList<>();
         this.attempts++;
@@ -63,6 +72,10 @@ public class Game {
             playerGuess.add(String.valueOf(attempt.charAt(i)));
         }
     }
+
+    /**
+     * sends the legend for the player to know which letter correspondence and the board Updated.
+     */
 
     public void sendBoard() {
         player.send(Messages.LEGEND);

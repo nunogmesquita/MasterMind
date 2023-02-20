@@ -15,6 +15,12 @@ public enum Command {
         this.handler = handler;
     }
 
+
+    /**
+     * returns a command in case the description inputted belongs to the command List.
+     * @param description
+     * @return command returned
+     */
     public static Command getCommandFromDescription(String description) {
         for (Command command : values()) {
             if (description.equals(command.description)) {

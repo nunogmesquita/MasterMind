@@ -6,6 +6,10 @@ import java.util.*;
 
 public class Code {
 
+    /**
+     * generates a code with 4 positions based on the possible choices of colors.
+     * @return returns
+     */
     static ArrayList<String> generateCode() {
         ArrayList<String> code = new ArrayList<>();
         ArrayList<String> possibleChoices = new ArrayList<>(Arrays.asList("G", "B", "Y", "O", "P"));
@@ -15,6 +19,14 @@ public class Code {
         return code;
     }
 
+    /**
+     * this method compares every single position of the player guess
+     * with the secretCode and then returns the result in the values of "+" for the right color and right position and "-"
+     * for the right color and wrong position.
+     * @param playerGuess List of chars for the player try for in this turn
+     * @param secretCode List of chars for the player secret code
+     * @return
+     */
     static List<String> compareCodes(List<String> playerGuess, List<String> secretCode) {
         List<String> compareResults = new ArrayList<>();
         List<String> playerGuessCopy = new ArrayList<>(playerGuess);
@@ -40,6 +52,11 @@ public class Code {
         return compareResults;
     }
 
+
+    /**
+     * sends to the player the secret code in case he wants to give up.
+     * @param player
+     */
     public static void showCode(Server.ConnectedPlayer player) {
         player.send(Messages.SHOW_CODE.formatted(player.game.secretCode));
     }
