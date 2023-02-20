@@ -165,5 +165,8 @@ public class Server {
         public String getName() {
             return name;
         }
+
+        public void startNewGame() {
+        }
     }
 }
