@@ -15,7 +15,7 @@ public class Server {
 
     private final ServerSocket serverSocket;
 
-    private ExecutorService service;
+    ExecutorService service;
 
     int numOfPlayers;
 
@@ -41,26 +41,46 @@ public class Server {
         service.submit(connectedPlayer);
     }
 
-    private synchronized void addPlayer(ConnectedPlayer connectedPlayer) throws IOException, InterruptedException {
-        playersList.add(connectedPlayer);
-        connectedPlayer.send("Please insert your username:");
-        welcomePlayer(connectedPlayer);
+    private synchronized void addPlayer(ConnectedPlayer player) throws IOException, InterruptedException {
+        verifyPlayerName(player);
         if (playersList.size() < numOfPlayers) {
-            connectedPlayer.send(Messages.WAITING_ALL_PLAYERS.formatted(numOfPlayers - playersList.size()));
+            player.send(Messages.WAITING_ALL_PLAYERS.formatted(numOfPlayers - playersList.size()));
             this.wait();
         } else this.notifyAll();
     }
 
-    private void welcomePlayer(ConnectedPlayer connectedPlayer) throws IOException {
-        connectedPlayer.name = new BufferedReader(new InputStreamReader(connectedPlayer.playerSocket.getInputStream())).readLine();
-        connectedPlayer.send(Messages.WELCOME.formatted(connectedPlayer.getName()));
+    private void verifyPlayerName(ConnectedPlayer player) throws IOException, InterruptedException {
+        player.send(Messages.ASK_NAME);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(player.playerSocket.getInputStream()));
+        String playerName = reader.readLine();
+        validateName(player, playerName);
+        if (playersList.stream().
+                anyMatch(p -> p.getName().
+                        equals(playerName))) {
+            player.send(Messages.INVALID_NAME);
+            verifyPlayerName(player);
+        } else {
+            player.name = playerName;
+            playersList.add(player);
+        }
+        player.send(Messages.WELCOME.formatted(player.getName()));
+    }
+
+    private void validateName(ConnectedPlayer connectedPlayer, String name) throws IOException, InterruptedException {
+        String regex = "^\\S+$";
+        final Pattern pattern = Pattern.compile(regex);
+        final Matcher matcher = pattern.matcher(name);
+        if (!matcher.find()) {
+            connectedPlayer.send(Messages.INVALID_FIRST_NAME);
+            verifyPlayerName(connectedPlayer);
+        }
     }
 
     public void removePlayer(ConnectedPlayer connectedPlayer) {
         playersList.remove(connectedPlayer);
     }
 
-    private void broadcast(String name, String message) {
+    public void broadcast(String name, String message) {
         playersList.stream()
                 .filter(player -> !player.getName().equals(name))
                 .forEach(player -> player.send(name.concat(message)));
@@ -90,19 +110,22 @@ public class Server {
                 addPlayer(this);
                 send(Instructions.readInstruction());
                 game.play();
+                restart();
             } catch (IOException | InterruptedException e) {
                 throw new RuntimeException(e);
+            } finally {
+                close();
             }
         }
 
-        String askForGuess() throws IOException {
+        public String askForGuess() throws IOException {
             while (!playerSocket.isClosed()) {
                 try {
                     Scanner in = new Scanner(playerSocket.getInputStream());
-                    message = in.nextLine();
+                    message = in.nextLine().toUpperCase();
                     if (isCommand(message)) {
                         dealWithCommand(message);
-                        break;
+                        askForGuess();
                     }
                 } catch (IOException e) {
                     System.err.println(Messages.PLAYER_ERROR + e.getMessage());
@@ -118,7 +141,7 @@ public class Server {
         private boolean validInput() {
             String regex = "^[OYBPG]{4}$";
             final Pattern pattern = Pattern.compile(regex);
-            final Matcher matcher = pattern.matcher(message.toUpperCase());
+            final Matcher matcher = pattern.matcher(message);
             if (!matcher.find()) {
                 send(Messages.INVALID_TRY);
                 return false;
@@ -137,7 +160,7 @@ public class Server {
                 out.write(Messages.NO_SUCH_COMMAND);
                 out.newLine();
                 out.flush();
-                return;
+                askForGuess();
             }
             command.getHandler().execute(Server.this, this);
         }
@@ -156,7 +179,6 @@ public class Server {
         public void close() {
             try {
                 playerSocket.close();
-                broadcast(this.getName(), Messages.PLAYER_QUIT);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -166,7 +188,15 @@ public class Server {
             return name;
         }
 
-        public void startNewGame() {
+        public void restart() {
+            send(Messages.QUIT_OR_NEW_GAME);
+            try {
+                Scanner in = new Scanner(playerSocket.getInputStream());
+                message = in.nextLine();
+                dealWithCommand(message);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 }

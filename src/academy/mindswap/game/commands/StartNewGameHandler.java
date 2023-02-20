@@ -6,6 +6,6 @@ public class StartNewGameHandler implements CommandHandler {
 
     @Override
     public void execute(Server server, Server.ConnectedPlayer connectedPlayer) {
-        connectedPlayer.startNewGame();
+        connectedPlayer.run();
     }
 }

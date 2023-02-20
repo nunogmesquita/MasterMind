@@ -9,10 +9,6 @@ public class Instructions {
     public static String readInstruction() {
         try {
 
-            for (Items items : Items.values()) {
-                System.out.println(items.toString());
-
-            }
             File file = new File("resources/GameRules.txt");
             Scanner scanner = new Scanner(file);
 
@@ -22,7 +18,7 @@ public class Instructions {
                 stringBuilder.append("\n");
             }
             scanner.close();
-            return stringBuilder.toString();
+            return stringBuilder + Messages.RESULT_RULES + Messages.LEGEND;
         } catch (FileNotFoundException e) {
             System.out.println("File not found " + e.getMessage());
         }

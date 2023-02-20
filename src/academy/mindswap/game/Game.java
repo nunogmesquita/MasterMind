@@ -6,13 +6,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.lang.Integer.parseInt;
-
 public class Game {
 
     Server.ConnectedPlayer player;
 
     List<String> playerGuess;
+
+    int maxAttempts;
 
     int attempts;
 
@@ -29,23 +29,31 @@ public class Game {
     public Game(Server.ConnectedPlayer connectedPlayer) {
         this.player = connectedPlayer;
         this.board = new Board();
+        this.secretCode = Code.generateCode();
+        this.maxAttempts = 12;
+        System.out.println(secretCode);
     }
 
     public void play() throws IOException {
-        this.secretCode = Code.generateCode();
-        System.out.println(secretCode);
         while (!rightGuess) {
             try {
                 player.send(Messages.INSERT_TRY);
                 attempt = player.askForGuess();
                 checkPlayerGuess();
-                Code.compareCodes(this, playerGuess, secretCode);
-                board.printBoard(this);
+                turnResult = Code.compareCodes(playerGuess, secretCode);
+                if (playerGuess.equals(secretCode)) {
+                    rightGuess = true;
+                    player.send(Messages.RIGHT_GUESS.formatted(attempts));
+                }
+                sendBoard();
+                if (attempts == maxAttempts) {
+                    player.send(Messages.OUT_OF_TRIES);
+                    break;
+                }
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
-        player.send(Messages.RIGHT_GUESS.formatted(attempts));
     }
 
     private void checkPlayerGuess() {
@@ -55,4 +63,11 @@ public class Game {
             playerGuess.add(String.valueOf(attempt.charAt(i)));
         }
     }
+
+    public void sendBoard() {
+        player.send(Messages.LEGEND);
+        for (String s : board.updatedBoard(this.playerGuess, this.turnResult))
+            player.send(s);
+    }
+
 }

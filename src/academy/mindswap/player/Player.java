@@ -23,7 +23,7 @@ public class Player {
 
         new Thread(new KeyboardHandler(out, socket)).start();
         String line;
-        while (( line = in.readLine()) != null) {
+        while ((line = in.readLine()) != null) {
             System.out.println(line);
         }
         socket.close();
@@ -56,7 +56,7 @@ public class Player {
                         System.exit(0);
                     }
                 } catch (IOException e) {
-                    System.out.println("Something went wrong with the server. Connection closing...");
+                    System.out.println(Messages.SERVER_ERROR);
                     try {
                         socket.close();
                     } catch (IOException ex) {
