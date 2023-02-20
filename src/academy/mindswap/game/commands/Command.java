@@ -3,7 +3,7 @@ package academy.mindswap.game.commands;
 
 public enum Command {
     HELP("/HELP", new HelpHandler()),
-    QUIT("/QUITt", new QuitHandler()),
+    QUIT("/QUIT", new QuitHandler()),
     START("/START", new StartNewGameHandler()),
     SHOW("/SHOW", new ShowHandler());
 

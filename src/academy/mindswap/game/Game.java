@@ -31,9 +31,7 @@ public class Game {
         this.board = new Board();
         this.secretCode = Code.generateCode();
         this.maxAttempts = 12;
-        System.out.println(secretCode);
     }
-
 
     /**
      * This method runs through all the different steps of the game.
@@ -46,11 +44,11 @@ public class Game {
                 attempt = player.askForGuess();
                 checkPlayerGuess();
                 turnResult = Code.compareCodes(playerGuess, secretCode);
+                sendBoard();
                 if (playerGuess.equals(secretCode)) {
                     rightGuess = true;
                     player.send(Messages.RIGHT_GUESS.formatted(attempts));
                 }
-                sendBoard();
                 if (attempts == maxAttempts) {
                     player.send(Messages.OUT_OF_TRIES);
                     break;

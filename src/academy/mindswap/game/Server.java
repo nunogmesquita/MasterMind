@@ -123,7 +123,6 @@ public class Server {
         public ConnectedPlayer(Socket playerSocket) throws IOException {
             this.playerSocket = playerSocket;
             this.out = new BufferedWriter(new OutputStreamWriter(playerSocket.getOutputStream()));
-            game = new Game(this);
         }
 
         /**
@@ -132,6 +131,7 @@ public class Server {
         @Override
         public void run() {
             try {
+                game = new Game(this);
                 addPlayer(this);
                 send(Instructions.readInstruction());
                 game.play();
@@ -155,7 +155,7 @@ public class Server {
                     message = in.nextLine().toUpperCase();
                     if (isCommand(message)) {
                         dealWithCommand(message);
-                        askForGuess();
+                        continue;
                     }
                 } catch (IOException e) {
                     System.err.println(Messages.PLAYER_ERROR + e.getMessage());
@@ -243,7 +243,7 @@ public class Server {
             try {
                 Scanner in = new Scanner(playerSocket.getInputStream());
                 message = in.nextLine();
-                dealWithCommand(message);
+                dealWithCommand(message.toUpperCase());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
